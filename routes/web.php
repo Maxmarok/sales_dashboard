@@ -13,6 +13,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::get('{any}', function () { 
+    return view('main'); 
+})->where('any', '.*'); 
+
+Route::get('/main', [App\Http\Controllers\Controller::class, 'main']);
+
+Route::get('/login', function () {
     return view('main');
 });
