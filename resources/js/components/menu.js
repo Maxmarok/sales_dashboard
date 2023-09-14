@@ -2,13 +2,13 @@ export const menuItems = [
     {
         label: 'Главная',
         icon: 'ri-dashboard-line',
-        link: '/',
+        link: '/dashboard',
     },
 
     {
         label: 'Отчеты',
         icon: 'ri-table-line',
-        link: '/reports',
+        link: '/dashboard/reports',
     },
 
     {
@@ -17,7 +17,7 @@ export const menuItems = [
         subItems: [
             {
                 label: 'Добавить магазин',
-                link: '/reports'
+                link: '/dashboard/stores/add'
             },
         ],
     }

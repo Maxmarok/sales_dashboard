@@ -19,6 +19,7 @@ export default defineConfig({
             '~sweetalert2': path.resolve(__dirname, 'node_modules/sweetalert2'),
             // '~vue2-datepicker': path.resolve(__dirname, 'node_modules/vue3-datepicker'),
             '~vue-multiselect': path.resolve(__dirname, 'node_modules/vue-multiselect'),
+            '~vue3-form-wizard': path.resolve(__dirname, 'node_modules/vue3-form-wizard'),
             vue: 'vue/dist/vue.esm-bundler.js',
         },
     },

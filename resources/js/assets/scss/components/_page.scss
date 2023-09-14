@@ -1,0 +1,27 @@
+body[data-sidebar="dark"] {
+    background-color: $body-bg;
+    color: $gray-700;
+    font-size: $font-size-base;
+}
+.page-title-box {
+    padding-bottom: $grid-gutter-width;
+
+    .breadcrumb {
+        background-color: transparent;
+        padding: 0;
+    }
+
+    h4 {
+        font-size: 15px;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+}
+
+.btn {
+    &.btn-primary {
+        color: $white;
+        background-color: $primary;
+        border-color: $primary
+    }
+}

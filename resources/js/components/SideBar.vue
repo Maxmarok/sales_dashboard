@@ -11,18 +11,18 @@ const menu = () => {
     var links = document.getElementsByClassName("side-nav-link-ref");
     var matchingMenuItem = null;
     for (var i = 0; i < links.length; i++) {
-        console.log(window.location.pathname, links[i].pathmane);
+        //console.log(window.location.pathname, links[i].pathmane);
       if (window.location.pathname === links[i].pathname) {
         matchingMenuItem = links[i];
         break;
       }
     }
 
-    if (matchingMenuItem) {
+    if (matchingMenuItem && matchingMenuItem !== null) {
       matchingMenuItem.classList.add("active");
       var parent = matchingMenuItem.parentElement;
       
-      if (parent) {
+      if (parent && parent !== null) {
         parent.classList.add("mm-active");
         const parent2 = parent.parentElement.closest("ul");
         if (parent2 && parent2.id !== "side-menu") {

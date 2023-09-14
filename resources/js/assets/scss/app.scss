@@ -2,14 +2,21 @@
 @import url('https://fonts.bunny.net/css?family=Nunito');
 
 // Bootstrap
-@import 'bootstrap/scss/bootstrap';
+@import '~bootstrap/scss/bootstrap';
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 
 // Variables
 @import 'variables';
 
+@import 'components/authentication';
+@import 'components/form-wizard';
+@import 'components/pagination';
+@import 'components/preloader';
 @import 'components/sidebar';
 @import 'components/topbar';
+@import 'components/page';
+@import 'components/card';
+@import 'components/sweetalert';
 
 @import "plugins/icons";
