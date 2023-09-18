@@ -2,6 +2,7 @@
 namespace App\Services\WB;
 
 use App\Http\Requests\ChartController\DynamicsRubRequest;
+use App\Models\Lk;
 use App\Models\User;
 use App\Models\WbOrder;
 use App\Models\WbPrice;
@@ -13,13 +14,71 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Cookie\CookieJar;
-use function Symfony\Component\String\b;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Http;
 
 class PrimaryDataService extends WBMain {
 
-    public function loadDetailReport(User $user): bool
+    public function loadDetailReport(string $id, $response): void
+    {
+        $chunkSize = 1000; // Размер чанка
+        $totalRecords = count($response);
+        $totalChunks = ceil($totalRecords / $chunkSize);
+
+        for ($chunk = 0; $chunk < $totalChunks; $chunk++) {
+            $records = [];
+
+            $start = $chunk * $chunkSize;
+            $end = min(($start + $chunkSize), $totalRecords);
+
+            for ($i = $start; $i < $end; $i++) {
+                $row = $response[$i];
+
+                $record = [
+                    "realizationreport_id" => $row['realizationreport_id'],
+                    "dateFrom" => $row['date_from'],
+                    "dateTo" => $row['date_to'],
+                    "nm_id" => $row['nm_id'],
+                    "subject_name" => $row['subject_name'],
+                    "brand_name" => $row['brand_name'],
+                    "sa_name" => $row['sa_name'],
+                    "ts_name" => $row['ts_name'],
+                    "doc_type_name" => $row['doc_type_name'],
+                    "barcode" => $row['barcode'],
+                    "quantity" => $row['quantity'],
+                    "retail_price" => $row['retail_price'],
+                    "retail_amount" => $row['retail_amount'],
+                    "sale_percent" => $row['sale_percent'],
+                    "commission_percent" => $row['commission_percent'],
+                    "order_dt" => $row['order_dt'],
+                    "supplier_oper_name" => $row['supplier_oper_name'],
+                    "sale_dt" => $row['sale_dt'],
+                    "retail_price_withdisc_rub" => $row['retail_price_withdisc_rub'],
+                    "delivery_amount" => $row['delivery_amount'],
+                    "delivery_rub" => $row['delivery_rub'],
+                    "rid" => $row['rid'],
+                    "ppvz_for_pay" => $row['ppvz_for_pay'],
+                    "ppvz_vw_nds" => $row['ppvz_vw_nds'],
+                    "ppvz_sales_commission" => $row['ppvz_sales_commission'] ?? null,
+                    "additional_payment" => $row['additional_payment'],
+                    "penalty" => $row['penalty'],
+                    "lk" => $row['lk'] ?? null,
+                    "rr_dt" => $row['rr_dt'],
+                    "ppvz_spp_prc" => $row['ppvz_spp_prc'] ?? null,
+                    "office_name" => $row['office_name'],
+                    "bonus_type_name" => $row['bonus_type_name'] ?? null,
+                    "rrd_id" => $row['rrd_id'],
+                    "lk_id" => $id,
+                    "dateUpdate" => now()->format('Y-m-d'),
+                    "return_amount" => $row['return_amount']
+                ];
+
+                $records[] = $record;
+            }
+            WbReportDetailByPeriod::insert($records);
+        }
+    }
+    public function loadDetailReports(User $user): bool
     {
         if($user->lk == null){
             return false;
@@ -51,62 +110,7 @@ class PrimaryDataService extends WBMain {
             Log::channel('updates')->info("Данные были получены!", ['user' => $user->id]);
 
             if (!WbReportDetailByPeriod::where('lk_id', $lk->id)->where('rid', last($response)['rid'])->exists()) {
-                $chunkSize = 1000; // Размер чанка
-                $totalRecords = count($response);
-                $totalChunks = ceil($totalRecords / $chunkSize);
-
-                for ($chunk = 0; $chunk < $totalChunks; $chunk++) {
-                    $records = [];
-
-                    $start = $chunk * $chunkSize;
-                    $end = min(($start + $chunkSize), $totalRecords);
-
-                    for ($i = $start; $i < $end; $i++) {
-                        $row = $response[$i];
-
-                        $record = [
-                            "realizationreport_id" => $row['realizationreport_id'],
-                            "dateFrom" => $row['date_from'],
-                            "dateTo" => $row['date_to'],
-                            "nm_id" => $row['nm_id'],
-                            "subject_name" => $row['subject_name'],
-                            "brand_name" => $row['brand_name'],
-                            "sa_name" => $row['sa_name'],
-                            "ts_name" => $row['ts_name'],
-                            "doc_type_name" => $row['doc_type_name'],
-                            "barcode" => $row['barcode'],
-                            "quantity" => $row['quantity'],
-                            "retail_price" => $row['retail_price'],
-                            "retail_amount" => $row['retail_amount'],
-                            "sale_percent" => $row['sale_percent'],
-                            "commission_percent" => $row['commission_percent'],
-                            "order_dt" => $row['order_dt'],
-                            "supplier_oper_name" => $row['supplier_oper_name'],
-                            "sale_dt" => $row['sale_dt'],
-                            "retail_price_withdisc_rub" => $row['retail_price_withdisc_rub'],
-                            "delivery_amount" => $row['delivery_amount'],
-                            "delivery_rub" => $row['delivery_rub'],
-                            "rid" => $row['rid'],
-                            "ppvz_for_pay" => $row['ppvz_for_pay'],
-                            "ppvz_vw_nds" => $row['ppvz_vw_nds'],
-                            "ppvz_sales_commission" => $row['ppvz_sales_commission'] ?? null,
-                            "additional_payment" => $row['additional_payment'],
-                            "penalty" => $row['penalty'],
-                            "lk" => $row['lk'] ?? null,
-                            "rr_dt" => $row['rr_dt'],
-                            "ppvz_spp_prc" => $row['ppvz_spp_prc'] ?? null,
-                            "office_name" => $row['office_name'],
-                            "bonus_type_name" => $row['bonus_type_name'] ?? null,
-                            "rrd_id" => $row['rrd_id'],
-                            "lk_id" => $lk->id,
-                            "dateUpdate" => now()->format('Y-m-d'),
-                            "return_amount" => $row['return_amount']
-                        ];
-
-                        $records[] = $record;
-                    }
-                    WbReportDetailByPeriod::insert($records);
-                }
+                $this->loadDetailReport($lk->id, $response);
             } else {
                 Log::channel('reports')->info('Детальный отчет совпадает с предыдущим', ["user" => $user->id]);
             }
@@ -114,6 +118,82 @@ class PrimaryDataService extends WBMain {
         }
         Log::channel('updates')->info('Детальный ответ загружен', ["user" => $user->id]);
         return true;
+    }
+
+    public function loadData(string $type, string $id, $response): void
+    {
+        switch($type) {
+            case 'sales':
+            case 'statistic':
+                $this->loadSale($id, $response);
+                break;
+            
+            case 'detail':
+                $this->loadDetailReport($id, $response);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    public function loadSale(string $id, $response): void
+    {
+        $chunkSize = 1000; // Размер чанка
+        $totalRecords = count($response);
+        $totalChunks = ceil($totalRecords / $chunkSize);
+
+        for ($chunk = 0; $chunk < $totalChunks; $chunk++) {
+            $records = [];
+
+            $start = $chunk * $chunkSize;
+            $end = min(($start + $chunkSize), $totalRecords);
+
+            Log::debug([$chunk, $totalRecords]);
+
+            for ($i = $start; $i < $end; $i++) {
+                $row = $response[$i];
+                //record
+                if($row) {
+                    $record = [
+                        "date" => $row['date'],
+                        "lastChangeDate" => $row['lastChangeDate'],
+                        "supplierArticle" => $row['supplierArticle'],
+                        "techSize" => $row['techSize'],
+                        "barcode" => $row['barcode'],
+                        "totalPrice" => $row['totalPrice'],
+                        "discountPercent" => $row['discountPercent'],
+                        "isSupply" => $row['isSupply'],
+                        "isRealization" => $row['isRealization'],
+                        "promoCodeDiscount" => $row['promoCodeDiscount'],
+                        "warehouseName" => $row['warehouseName'],
+                        "countryName" => $row['countryName'],
+                        "oblastOkrugName" => $row['oblastOkrugName'],
+                        "regionName" => $row['regionName'],
+                        "incomeID" => $row['incomeID'],
+                        "saleID" => $row['saleID'],
+                        "odid" => $row['odid'],
+                        "spp" => $row['spp'],
+                        "forPay" => $row['forPay'],
+                        "finishedPrice" => $row['finishedPrice'],
+                        "priceWithDisc" => $row['priceWithDisc'],
+                        "nmId" => $row['nmId'],
+                        "subject" => $row['subject'],
+                        "category" => $row['category'],
+                        "brand" => $row['brand'],
+                        "IsStorno" => $row['IsStorno'],
+                        "gNumber" => $row['gNumber'],
+                        "sticker" => $row['sticker'],
+                        "srid" => $row['srid'],
+                        "dateUpdate" => now(),
+                        "lk_id" => $id
+                    ];
+
+                    $records[] = $record;
+                }
+            }
+            WbSale::insert($records);
+        }
     }
 
     public function loadSales(User $user): bool
@@ -139,64 +219,18 @@ class PrimaryDataService extends WBMain {
                 return true;
             }
 
+
             if (!WbSale::where('lk_id', $lk->id)->where('srid', last($response)['srid'])->exists()) {
-                $chunkSize = 1000; // Размер чанка
-                $totalRecords = count($response);
-                $totalChunks = ceil($totalRecords / $chunkSize);
-
-                for ($chunk = 0; $chunk < $totalChunks; $chunk++) {
-                    $records = [];
-
-                    $start = $chunk * $chunkSize;
-                    $end = min(($start + $chunkSize), $totalRecords);
-
-                    for ($i = $start; $i < $end; $i++) {
-                        $row = $response[$i];
-                        //record
-                        $record = [
-                            "date" => $row['date'],
-                            "lastChangeDate" => $row['lastChangeDate'],
-                            "supplierArticle" => $row['supplierArticle'],
-                            "techSize" => $row['techSize'],
-                            "barcode" => $row['barcode'],
-                            "totalPrice" => $row['totalPrice'],
-                            "discountPercent" => $row['discountPercent'],
-                            "isSupply" => $row['isSupply'],
-                            "isRealization" => $row['isRealization'],
-                            "promoCodeDiscount" => $row['promoCodeDiscount'],
-                            "warehouseName" => $row['warehouseName'],
-                            "countryName" => $row['countryName'],
-                            "oblastOkrugName" => $row['oblastOkrugName'],
-                            "regionName" => $row['regionName'],
-                            "incomeID" => $row['incomeID'],
-                            "saleID" => $row['saleID'],
-                            "odid" => $row['odid'],
-                            "spp" => $row['spp'],
-                            "forPay" => $row['forPay'],
-                            "finishedPrice" => $row['finishedPrice'],
-                            "priceWithDisc" => $row['priceWithDisc'],
-                            "nmId" => $row['nmId'],
-                            "subject" => $row['subject'],
-                            "category" => $row['category'],
-                            "brand" => $row['brand'],
-                            "IsStorno" => $row['IsStorno'],
-                            "gNumber" => $row['gNumber'],
-                            "sticker" => $row['sticker'],
-                            "srid" => $row['srid'],
-                            "dateUpdate" => now(),
-                            "lk_id" => $lk->id
-                        ];
-
-                        $records[] = $record;
-                    }
-                    WbSale::insert($records);
-                }
+                $this->loadSale($lk->id, $response);
             } else {
                 Log::channel('reports')->info('Отчет продаж совпадает с предыдущим', ["user" => $user->id]);
             }
+            
             $user->changeReportStatus('WB', 'sales', 'success');
         }
         return true;
+
+       
     }
 
     public function loadOrders(User $user): bool

@@ -23,8 +23,9 @@ class SumRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'dateFrom' => 'required|date_format:"Y-m-d"',
-            'dateTo' => 'required|date_format:"Y-m-d"',
+            // 'dateFrom' => 'required|date_format:"Y-m-d"',
+            // 'dateTo' => 'required|date_format:"Y-m-d"',
+            'year' => 'required|string|in:2022,2023',
             'lk_id' => [
                 'required',
                 'integer',

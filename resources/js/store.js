@@ -1,23 +1,32 @@
 import { createStore } from 'vuex'
-import cookies from 'vue-cookies'
+import createPersistedState from "vuex-persistedstate"
 
-// Create a new store instance.
 const store = createStore({
   state () {
     return {
-      user: cookies.get('user'),
-      token: cookies.get('token'),
+      user: null,
+      token: null,
+      storeList: null,
     }
   },
   mutations: {
     saveUser (state, data) {
-      
-      state.user = data.user;
-      state.token = data.token;
-      cookies.set('user', state.user);
-      cookies.set('token', state.token);
+      state.user = data
+    },
+    saveToken (state, data) {
+      state.token = data
+    },
+    saveStoreList (state, data) {
+      state.storeList = data
+    },
+
+  },
+  getters: {
+    storeList (state, getters) {
+        return state.storeList
     }
-  }
+  },
+  plugins: [createPersistedState()]
 })
 
 export default store

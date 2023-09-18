@@ -11,8 +11,16 @@ import VueSweetalert2 from 'vue-sweetalert2'
 
 const app = createApp(App)
 app.use(VueTheMask)
-app.use(router)
 app.use(store)
 app.use(VueCookies)
 app.use(VueSweetalert2)
+
+axios.interceptors.request.use(function (config) {
+    const token = store.state.token;
+    config.headers.Authorization = 'Bearer ' + token;
+    return config;
+});
+
+app.use(router)
+
 app.mount("#app")

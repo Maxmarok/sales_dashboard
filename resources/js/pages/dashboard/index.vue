@@ -2,21 +2,24 @@
 import { onMounted, ref } from 'vue'
 import TopBar from '@/components/TopBar.vue'
 import SideBar from '@/components/SideBar.vue'
+import store from '@/store'
 const isMenuCondensed = ref(false);
 const loader = ref(true);
 onMounted(() => {
-    if (loader === true) {
-      document.getElementById("preloader").style.display = "block";
-      document.getElementById("status").style.display = "block";
+  if (loader === true) {
+    document.getElementById("preloader").style.display = "block";
+    document.getElementById("status").style.display = "block";
 
-      setTimeout(() => {
-        document.getElementById("preloader").style.display = "none";
-        document.getElementById("status").style.display = "none";
-      }, 1000);
-    } else {
+    setTimeout(() => {
       document.getElementById("preloader").style.display = "none";
       document.getElementById("status").style.display = "none";
-    }
+    }, 1000);
+  } else {
+    document.getElementById("preloader").style.display = "none";
+    document.getElementById("status").style.display = "none";
+  }
+
+    
 })
 
 const toggleMenu = () => {

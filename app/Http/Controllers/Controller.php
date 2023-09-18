@@ -57,51 +57,6 @@ class Controller extends BaseController
         return $arr; 
     }
 
-    /**
-     * @param string $key
-     * @param string $dateFrom
-     * @return bool
-     */
-    public function sales(string $key, string $dateFrom, string $dateTo)
-    {
-        $data = [
-            "headers" => ["Authorization" => $key],
-            "query" => [
-                'dateFrom' => $dateFrom,
-                'dateTo' => $dateTo,
-            ]
-        ];
-
-        $request = $this->sendRequest('statistic','GET', '/api/v1/supplier/sales', $data);
-        //если произошла ошибка
-        if(get_class($request) == 'Illuminate\Http\JsonResponse'){
-            return false;
-        }
-
-        $arr = [
-            'totalPrice' => 0,
-            'forPay' => 0,
-            'finishedPrice' => 0,
-            'priceWithDisc' => 0,
-        ];
-
-        $response = json_decode($request->getBody());
-
-        foreach ($response as $row){
-            $arr['totalPrice'] += $row->totalPrice;
-            $arr['forPay'] += $row->forPay;
-            $arr['finishedPrice'] += $row->finishedPrice;
-            $arr['priceWithDisc'] += $row->priceWithDisc;
- 
-        }
-
-        // foreach($arr as $key => $value) {
-        //     echo nl2br($key.': '.$value.'\n');
-        // }
-
-        return $arr; 
-    }
-
     public function sendRequest(string $hostType, string $method, string $url, array $data): \Illuminate\Http\JsonResponse|\Psr\Http\Message\ResponseInterface
     {
         $host = $hostType == 'main' ? $this->mainUrl : $this->statisticUrl;

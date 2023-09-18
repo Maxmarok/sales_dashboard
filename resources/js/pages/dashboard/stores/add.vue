@@ -3,6 +3,8 @@ import { FormWizard, TabContent } from "vue3-form-wizard"
 import {onMounted, ref, inject} from 'vue'
 import PageHeader from "@/components/PageHeader.vue"
 import { useRoute } from 'vue-router'
+import router from "@/router"
+import store from "@/store"
 const title = "Добавление магазина"
 const items = [
     {
@@ -58,7 +60,6 @@ onMounted(() => {
 const submitStandard = () => formSubmit('standard')
 const submitStatistic = () => formSubmit('statistic')
 const submitAd = () => formSubmit('ad')
-
 const formSubmit = async (type) => {
     const arr = {
         marketplace: 'WB',
@@ -78,8 +79,12 @@ const formSubmit = async (type) => {
                 timer: 2000,
             })
             if(res.data) {
-                console.log(res.data);
-                return true;
+                if(type === 'ad') {
+                    store.commit('saveStoreList', res.data.data)
+                    router.push({name: 'ReportsItem', params: {id: id}})
+                } else {
+                    return true;
+                }
             } else {
                 return false;
             }

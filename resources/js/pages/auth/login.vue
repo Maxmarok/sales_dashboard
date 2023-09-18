@@ -15,7 +15,8 @@ const errors = ref({
 const loginUser = () => {
   axios.post('/api/v1/login', user.value)
     .then((res) => {
-      store.commit('saveUser', res.data)
+      store.commit('saveUser', res.data.user)
+      store.commit('saveToken', res.data.token)
       router.push({name: 'Dashboard'})
     })
     .catch((err) => {
@@ -23,7 +24,6 @@ const loginUser = () => {
     })
 }
 </script>
-
 <template>
 <div class="col-lg-4">
   <div class="authentication-page-content p-4 d-flex align-items-center min-vh-100">

@@ -15,18 +15,14 @@ const errors = ref({
 const registerUser = () => {
   axios.post('/api/v1/register', user.value)
     .then((res) => {
-      store.commit('saveUser', res.data)
+      store.commit('saveUser', res.data.user)
+      store.commit('saveToken', res.data.token)
       router.push({name: 'AddStore'})
     })
     .catch((err) => {
       if(err.response.data.errors !== undefined) errors.value = err.response.data.errors
     })
 }
-// watch(user.value, (newVal, oldVal) => {
-//   Object.keys(newVal).forEach((key) => {
-//     console.log(key);
-//   });
-// })
 </script>
 <template>
 <div class="col-lg-4">

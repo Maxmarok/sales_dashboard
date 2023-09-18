@@ -21,7 +21,14 @@ const routes = [
             {
                 name: 'Reports',
                 path: 'reports',
-                component: Reports
+                component: Reports,
+                children: [
+                    {
+                        name: 'ReportsItem',
+                        path: ':id?',
+                        component: Reports
+                    },
+                ],
             },
             {
                 name: 'Stores',
@@ -39,7 +46,7 @@ const routes = [
                         path: 'change/:id?',
                         component: AddStore
                     },
-                ]
+                ],
             },
         ]
     },

@@ -50,6 +50,8 @@ Route::group([
                 Route::post('/update/{id}', [App\Http\Controllers\API\ProfileController::class, 'lkUpdate']);
             });
         });
+
+        Route::post('movements', [App\Http\Controllers\API\SalesController::class, 'movements']);
     });
 });
 

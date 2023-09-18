@@ -48,7 +48,6 @@ class User extends Authenticatable
         return $this->hasOne(Lk::class, 'user_id', 'id')->find($id);
     }
 
-
     public function lk(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Lk::class, 'user_id', 'id')->orderBy('created_at', 'DESC');

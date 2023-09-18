@@ -1,6 +1,5 @@
 import 'bootstrap';
 import store from '@/store'
-import cookies from 'vue-cookies';
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
  * to our Laravel back-end. This library automatically handles sending the
@@ -12,13 +11,7 @@ window.axios = axios;
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.axios.defaults.headers.common['Accept'] = 'application/json';
-window.axios.defaults.headers.common['Authorization'] = 'Bearer ' + cookies.get('token');
-
-// axios.interceptors.request.use(function (config) {
-//     const token = store.state.token;
-//     config.headers.Authorization = 'Bearer ' + cookies.token;
-//     return config;
-// });
+//window.axios.defaults.headers.common['Authorization'] = 'Bearer ' + store.state.token;
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening

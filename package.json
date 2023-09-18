@@ -16,16 +16,19 @@
     },
     "dependencies": {
         "@vue/compat": "^3.3.4",
+        "@vueform/multiselect": "^2.6.2",
         "bootstrap": "^4.5.3",
         "metismenujs": "^1.4.0",
         "simplebar-vue": "^2.3.3",
         "vue-cookies": "^1.8.3",
+        "vue-multiselect": "^2.1.7",
         "vue-router": "^4.0.13",
         "vue-sweetalert2": "^5.0.5",
         "vue-the-mask": "^0.11.1",
         "vue3-datepicker": "^0.4.0",
         "vue3-dropzone": "^2.1.2",
         "vue3-form-wizard": "^0.2.1",
-        "vuex": "^4.1.0"
+        "vuex": "^4.1.0",
+        "vuex-persistedstate": "^4.1.0"
     }
 }
