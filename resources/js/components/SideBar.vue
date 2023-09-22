@@ -32,47 +32,61 @@ const menu = () => {
     }
 }
 
-const storesList = ref(store.state.storeList)
-const storesItems = ref(storesList.value ? storesList.value.map(x => {
-    return {label: x.name, link: '/dashboard/reports/'+x.id}
-}) : [])
+// const storesList = ref(store.state.storeList)
+// const storesItems = ref(storesList.value ? storesList.value.map(x => {
+//     return {label: x.name, link: '/dashboard/reports/'+x.id}
+// }) : [])
 
 const menuItems = ref([
     {
         label: 'Рабочий стол',
         icon: 'ri-dashboard-line',
-        link: '/dashboard',
+        link: '/dashboard/desktop',
     },
 
     {
-        label: 'Отчеты',
-        icon: 'ri-table-line',
-        link: '/dashboard/reports',
-        subItems: [
-            {
-                label: 'Движение средств',
-                link: '/dashboard/reports/movements'
-            },
-        ]
+      label: 'Операции',
+      icon: 'ri-arrow-left-right-fill',
+      link: '/dashboard/operations',
     },
 
     {
-        label: 'Магазины',
-        icon: 'ri-menu-fill',
-        subItems: [
-            {
-                label: 'Добавить магазин',
-                link: '/dashboard/stores/add'
-            },
-        ],
+      label: 'Отчеты',
+      icon: 'ri-table-line',
+      link: '/dashboard/reports',
+      subItems: [
+        {
+          label: 'Движение средств',
+          icon: 'ri-coins-fill',
+          link: '/dashboard/reports/movements'
+        },
+      ]
+    },
+
+    {
+      label: 'Платежный календарь',
+      icon: 'ri-grid-fill',
+      link: '/dashboard/calendar',
+    },
+
+    {
+      label: 'Банковские счета',
+      icon: 'ri-file-text-line',
+      link: '/dashboard/accounts',
+    },
+
+    {
+      label: 'Магазины',
+      icon: 'ri-menu-fill',
+      link: '/dashboard/stores',
     }
 ])
 
-watch(() => store.getters.storeList, function() {
-  storesItems.value = store.getters.storeList.map(x => {
-    return {label: x.name, link: '/dashboard/stores/'+x.id}
-  })
-});
+// watch(() => store.getters.storeList, function() {
+//   storesItems.value = store.getters.storeList.map(x => {
+//     return {label: x.name, link: '/dashboard/stores/'+x.id}
+//   })
+// });
 
 onMounted(() => menu())
 </script>

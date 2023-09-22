@@ -52,6 +52,9 @@ Route::group([
         });
 
         Route::post('movements', [App\Http\Controllers\API\SalesController::class, 'movements']);
+
+        Route::get('calendar', [App\Http\Controllers\API\SalesController::class, 'calendar']);
+        Route::get('dashboard', [App\Http\Controllers\API\SalesController::class, 'dashboard']);
     });
 });
 

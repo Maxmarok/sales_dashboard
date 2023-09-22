@@ -25,3 +25,11 @@ body[data-sidebar="dark"] {
         border-color: $primary
     }
 }
+
+.bg-success{
+    background-color: #1cbb8c !important;
+
+    &:hover {
+        background-color: #158f6b !important;
+    }
+}

@@ -21,6 +21,7 @@ export default defineConfig({
             '~vueform': path.resolve(__dirname, 'node_modules/@vueform'),
             '~vue-multiselect': path.resolve(__dirname, 'node_modules/vue-multiselect'),
             '~vue3-form-wizard': path.resolve(__dirname, 'node_modules/vue3-form-wizard'),
+            '~@fullcalendar': path.resolve(__dirname, 'node_modules/@fullcalendar'),
             vue: 'vue/dist/vue.esm-bundler.js',
         },
     },

@@ -33,25 +33,25 @@ const wizard = ref()
 const swal = inject('$swal')
 onMounted(() => {
     const route = useRoute()
-    id = route.params.id    
+    id = route.params.id  
 
     if(id) {
         console.log(id)
 
         setTimeout(() => {
-            document.getElementById("preloader").style.display = "block";
-            document.getElementById("status").style.display = "block";
+            document.getElementById("preloader").style.display = "block"
+            document.getElementById("status").style.display = "block"
         })
 
         axios.get(`/api/v1/profile/lk/index/${id}`)
             .then((res) => {
-                console.log(res);
+                console.log(res)
                 if(res.data) {
-                    wizard.value.nextTab();
+                    wizard.value.nextTab()
                 }
                 setTimeout(() => {
-                    document.getElementById("preloader").style.display = "none";
-                    document.getElementById("status").style.display = "none";
+                    document.getElementById("preloader").style.display = "none"
+                    document.getElementById("status").style.display = "none"
                 }, 1000)
             })
         
@@ -109,7 +109,6 @@ const createStore = async () => {
             //console.log(res);
     
             if(res.data) {
-                console.log(res.data)
                 id = res.data.data.id
                 swal.fire({
                     text: 'Магазин создан, осталось добавить ключи',
@@ -199,6 +198,23 @@ const createStore = async () => {
                         icon="mdi mdi-key"
                         :before-change="submitAd"
                         title="API-Ключ (реклама)"
+                    >
+                        <div class="mb-4">
+                            <label>API-Ключ (реклама)</label>
+                            <textarea
+                                v-model="form.ad"
+                                class="form-control"
+                                name="textarea"
+                                :class="{ 'is-invalid': errors.ad }"
+                                rows="3"
+                                placeholder="Введите API-ключ"
+                            ></textarea>
+                        </div>
+                    </tab-content>
+
+                    <tab-content 
+                        :before-change="submitAd"
+                        title="Создание счета"
                     >
                         <div class="mb-4">
                             <label>API-Ключ (реклама)</label>

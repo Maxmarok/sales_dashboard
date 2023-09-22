@@ -11,4 +11,9 @@ class WbReportDetailByPeriod extends Model
     protected $table = 'wb_report_detail_by_periods';
     //protected $table = 'ReportDetailByPeriod';
     protected $guarded = [];
+
+    public function setDateFromAttribute()
+    {
+        $this->attributes['dateFrom'] = $this->attributes['dateFrom']->format('c');
+    }
 }

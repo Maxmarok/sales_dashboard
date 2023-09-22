@@ -43,7 +43,7 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function getLk($id)
+    public function getLk($id): \Illuminate\Database\Eloquent\Collection
     {
         return $this->hasOne(Lk::class, 'user_id', 'id')->find($id);
     }
@@ -53,4 +53,24 @@ class User extends Authenticatable
         return $this->hasMany(Lk::class, 'user_id', 'id')->orderBy('created_at', 'DESC');
     }
 
+    public function apiKeys()
+    {
+        return ApiKey::whereIn('lk_id', $this->lk->pluck('id')->all())->get();
+    }
+
+    /**
+     * Возвращает API ключ по указанным параметрам
+     * @param $marketplace
+     * @param $type
+     * @return mixed
+     */
+    public function getApiKey($marketplace, $type, $lkId = null): mixed
+    {
+        if($lkId == null){
+            $lkId = $this->lk->pluck('id')->first();
+        }
+
+        $query = $this->apiKeys()->where('marketplace', $marketplace)->where('type', $type)->where('lk_id', $lkId);
+        return $query->pluck('key')->first();
+    }
 }

@@ -14,4 +14,14 @@ class SalesController extends Controller
     {
         return (new WBSales())->movements($request->lk_id, $request->year);
     }
+
+    public function dashboard()
+    {
+        return (new WBSales())->dashboard();
+    }
+
+    public function calendar()
+    {
+        return (new WBSales())->calendar();
+    }
 }

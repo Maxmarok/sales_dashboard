@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Cookie\CookieJar;
 use Carbon\CarbonPeriod;
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Http;
 
 class PrimaryDataService extends WBMain {
@@ -34,46 +35,48 @@ class PrimaryDataService extends WBMain {
             for ($i = $start; $i < $end; $i++) {
                 $row = $response[$i];
 
-                $record = [
-                    "realizationreport_id" => $row['realizationreport_id'],
-                    "dateFrom" => $row['date_from'],
-                    "dateTo" => $row['date_to'],
-                    "nm_id" => $row['nm_id'],
-                    "subject_name" => $row['subject_name'],
-                    "brand_name" => $row['brand_name'],
-                    "sa_name" => $row['sa_name'],
-                    "ts_name" => $row['ts_name'],
-                    "doc_type_name" => $row['doc_type_name'],
-                    "barcode" => $row['barcode'],
-                    "quantity" => $row['quantity'],
-                    "retail_price" => $row['retail_price'],
-                    "retail_amount" => $row['retail_amount'],
-                    "sale_percent" => $row['sale_percent'],
-                    "commission_percent" => $row['commission_percent'],
-                    "order_dt" => $row['order_dt'],
-                    "supplier_oper_name" => $row['supplier_oper_name'],
-                    "sale_dt" => $row['sale_dt'],
-                    "retail_price_withdisc_rub" => $row['retail_price_withdisc_rub'],
-                    "delivery_amount" => $row['delivery_amount'],
-                    "delivery_rub" => $row['delivery_rub'],
-                    "rid" => $row['rid'],
-                    "ppvz_for_pay" => $row['ppvz_for_pay'],
-                    "ppvz_vw_nds" => $row['ppvz_vw_nds'],
-                    "ppvz_sales_commission" => $row['ppvz_sales_commission'] ?? null,
-                    "additional_payment" => $row['additional_payment'],
-                    "penalty" => $row['penalty'],
-                    "lk" => $row['lk'] ?? null,
-                    "rr_dt" => $row['rr_dt'],
-                    "ppvz_spp_prc" => $row['ppvz_spp_prc'] ?? null,
-                    "office_name" => $row['office_name'],
-                    "bonus_type_name" => $row['bonus_type_name'] ?? null,
-                    "rrd_id" => $row['rrd_id'],
-                    "lk_id" => $id,
-                    "dateUpdate" => now()->format('Y-m-d'),
-                    "return_amount" => $row['return_amount']
-                ];
+                if($row) {
+                    $record = [
+                        "realizationreport_id" => $row['realizationreport_id'],
+                        "dateFrom" => Carbon::parse($row['date_from'])->format('Y-m-d H:m:s'),
+                        "dateTo" => Carbon::parse($row['date_to'])->format('Y-m-d H:m:s'),
+                        "nm_id" => $row['nm_id'],
+                        "subject_name" => $row['subject_name'],
+                        "brand_name" => $row['brand_name'],
+                        "sa_name" => $row['sa_name'],
+                        "ts_name" => $row['ts_name'],
+                        "doc_type_name" => $row['doc_type_name'],
+                        "barcode" => $row['barcode'],
+                        "quantity" => $row['quantity'],
+                        "retail_price" => $row['retail_price'],
+                        "retail_amount" => $row['retail_amount'],
+                        "sale_percent" => $row['sale_percent'],
+                        "commission_percent" => $row['commission_percent'],
+                        "order_dt" => Carbon::parse($row['order_dt'])->format('Y-m-d H:m:s'),
+                        "supplier_oper_name" => $row['supplier_oper_name'],
+                        "sale_dt" => Carbon::parse($row['sale_dt'])->format('Y-m-d H:m:s'),
+                        "retail_price_withdisc_rub" => $row['retail_price_withdisc_rub'],
+                        "delivery_amount" => $row['delivery_amount'],
+                        "delivery_rub" => $row['delivery_rub'],
+                        "rid" => $row['rid'],
+                        "ppvz_for_pay" => $row['ppvz_for_pay'],
+                        "ppvz_vw_nds" => $row['ppvz_vw_nds'],
+                        "ppvz_sales_commission" => $row['ppvz_sales_commission'] ?? null,
+                        "additional_payment" => $row['additional_payment'],
+                        "penalty" => $row['penalty'],
+                        "lk" => $row['lk'] ?? null,
+                        "rr_dt" => Carbon::parse($row['rr_dt'])->format('Y-m-d H:m:s'),
+                        "ppvz_spp_prc" => $row['ppvz_spp_prc'] ?? null,
+                        "office_name" => $row['office_name'],
+                        "bonus_type_name" => $row['bonus_type_name'] ?? null,
+                        "rrd_id" => $row['rrd_id'],
+                        "lk_id" => $id,
+                        "dateUpdate" => now()->format('Y-m-d'),
+                        "return_amount" => $row['return_amount']
+                    ];
 
-                $records[] = $record;
+                    $records[] = $record;
+                }
             }
             WbReportDetailByPeriod::insert($records);
         }
@@ -86,19 +89,22 @@ class PrimaryDataService extends WBMain {
 
         foreach ($user->lk as $lk) {
             $report = WbReportDetailByPeriod::where('lk_id', $lk->id);
-            $dateFrom = $report->exists() ? now()->subDay()->format('Y-m-d') : now()->subDays(14)->format('Y-m-d');
+            $dateFrom = $report->exists() ? now()->subDay()->format('Y-m-d') : now()->subYear()->format('Y-m-d');
             $dateTo = now()->format('Y-m-d');
 
-            $req = Http::withHeaders([
-                'Authorization' => $user->getApiKey('WB', 'statistic', $lk->id),
-            ])->timeout(60000)->get("https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod?dateFrom=$dateFrom&dateTo=$dateTo");
+            $client = new Client();
 
-            $check = $this->checkRequest($req, 'detail', ['user' => $user->id, 'Error' => $req->getBody()]);
-            if(!$check){
-                return false;
-            }
+            $request = $client->request("GET", "https://statistics-api.wildberries.ru/api/v1/supplier/reportDetailByPeriod?dateFrom=$dateFrom&dateTo=$dateTo", [
+                "headers" => ["Authorization" => $user->getApiKey('WB', 'statistic', $lk->id)]
+            ]);
 
-            $response = $req->json();
+            $response = json_decode($request->getBody(), true);
+
+
+            // $check = $this->checkRequest($req, 'detail', ['user' => $user->id, 'Error' => $req->getBody()]);
+            // if(!$check){
+            //     return false;
+            // }
 
             if($response == null){
                 Log::channel('updates')->info("Данные не были получены", ["user" => $user->id]);
@@ -106,15 +112,11 @@ class PrimaryDataService extends WBMain {
             }
 
 
-            //Проверяем, нет-ли таких записей в БД
-            Log::channel('updates')->info("Данные были получены!", ['user' => $user->id]);
-
             if (!WbReportDetailByPeriod::where('lk_id', $lk->id)->where('rid', last($response)['rid'])->exists()) {
                 $this->loadDetailReport($lk->id, $response);
             } else {
                 Log::channel('reports')->info('Детальный отчет совпадает с предыдущим', ["user" => $user->id]);
             }
-            $user->changeReportStatus('WB', 'detail', 'success');
         }
         Log::channel('updates')->info('Детальный ответ загружен', ["user" => $user->id]);
         return true;
@@ -148,8 +150,6 @@ class PrimaryDataService extends WBMain {
 
             $start = $chunk * $chunkSize;
             $end = min(($start + $chunkSize), $totalRecords);
-
-            Log::debug([$chunk, $totalRecords]);
 
             for ($i = $start; $i < $end; $i++) {
                 $row = $response[$i];

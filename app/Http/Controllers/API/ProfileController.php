@@ -41,21 +41,17 @@ class ProfileController extends Controller
         ], 200);
     }
 
-    public function index(Request $id)
+    public function index(Request $request)
     {
-        $lk = Auth()->user()->getLk($id);
-
-        sleep(3);
         return Response()->json([
-            "code" => 201,
-            "data" => $lk
+            "data" => Lk::authUser()->find($request->id),
         ], 200);
     }
 
     public function listLk()
     {
-        $lk = Auth()->user()->lk;
-        return $lk;
+        $data = Lk::get();
+        return $data;
     }
 
     public function apiKeyList()

@@ -2,6 +2,7 @@
 namespace App\Services\WB;
 
 use App\Http\Resources\KeyService\CreateKeyResource;
+use App\Jobs\UpdateReportByPeriodJob;
 use App\Models\ApiKey;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -22,7 +23,6 @@ class KeyService extends WBMain {
         $user = Auth()->user();
 
         $baseUrl = $this->statisticUrl;
-        // $type = 'statistic';
         $date = Carbon::now()->subYear()->format('Y-m-d');
 
         switch($data['type']) {
@@ -60,20 +60,6 @@ class KeyService extends WBMain {
                 if($response) (new PrimaryDataService())->loadData($data['type'], $data['lk_id'], $response);
             }
 
-        
-            // if($data['type'] === 'statistic') {
-            //     $this->getData($data['lk_id'], $data['key'], $url, 'sales');
-
-            //     $type = 'reportDetailByPeriod';
-            //     $url = sprintf($format, $baseUrl, $type, $date);
-
-            //     $this->getData($data['lk_id'], $data['key'], $url, 'detail');
-            // } else {
-            //     $req = Http::withHeaders([
-            //         'Authorization' => $data['key'],
-            //     ])->timeout(60000)->get($url);
-            // }
-
         }catch (GuzzleException $exception){
             return match ($exception->getCode()) {
                 401 => Response()->json([
@@ -91,8 +77,9 @@ class KeyService extends WBMain {
             };
         }
         
-        
         $key = ApiKey::create($data);
+
+        if($data['type'] === 'statistic') UpdateReportByPeriodJob::dispatch($user);
 
         if($data['type'] === 'ad') {
             return Response()->json([

@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lks', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
+        Schema::table('lks', function (Blueprint $table) {
             $table->integer('tax')->default(0);
-            $table->foreignId('user_id')->references('id')->on('users');
-            $table->timestamps();
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lks');
+        Schema::table('lks', function (Blueprint $table) {
+            //
+        });
     }
 };

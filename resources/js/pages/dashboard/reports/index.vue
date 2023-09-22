@@ -17,33 +17,46 @@ const items = [
 
 const options = ref({
     year: [
-        '2022',
         '2023',
+        '2022',
     ],
-    lk: store.state.storeList
+    lks: [
+        {name: 'Тестовый'},
+        {name: '123'},
+    ]
 })
 
 const filter = ref({
-    year: '2022',
-    lk: 1,
+    year: '2023',
+    lk: []
 })
 
 const disabled = ref(false);
 
-const data = ref([]);
+const data = ref([
+    {sales: null},
+    {penalty: null},
+    {delivery: null},
+    {consume: null}
+]);
 onMounted(() => {
-    setTimeout(() => {
-        document.getElementById("preloader").style.display = "block";
-        document.getElementById("status").style.display = "block";
-    })
+    // setTimeout(() => {
+    //     document.getElementById("preloader").style.display = "block";
+    //     document.getElementById("status").style.display = "block";
+    // })
 
-    getData().then(() => {
-        setTimeout(() => {
-                document.getElementById("preloader").style.display = "none";
-                document.getElementById("status").style.display = "none";
-            }, 1000)
-    })
+    getData()
+    // .then(() => {
+    //     setTimeout(() => {
+    //             document.getElementById("preloader").style.display = "none";
+    //             document.getElementById("status").style.display = "none";
+    //         }, 1000)
+    // })
 });
+
+const getSelect = (option) => {
+    console.log(option);
+}
 
 const getData = async () => {
 
@@ -56,6 +69,13 @@ const getData = async () => {
 
             disabled.value = false;
         })
+}
+
+const getValue = (num, sign = null) => {
+    let str =  Math.round(num, 0).toLocaleString() + ' ₽'
+    //if(num > 0) str = str + ' ₽'
+    if(sign && num > 0) str = `${sign} ${str}`
+    return str
 }
 </script>
 <template>
@@ -71,11 +91,14 @@ const getData = async () => {
 
     <div class="col-3">
         <Multiselect
-            v-model="filter.lk"
-            :options="options.lk"
+            v-model="filter.lks"
+            :options="options.lks"
             :placeholder="'Выберите магазин'"
-            label="name"
-            track-by="id"
+            :label="'name'"
+            :track-by="'name'"
+            :searchable="true" 
+            :allow-empty="true"
+            @select="(selectedOption, id) => getSelect(selectedOption, id)"
         />
     </div>
 
@@ -89,8 +112,8 @@ const getData = async () => {
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered mb-0">
-                        <thead>
+                    <table class="table table-striped mb-0">
+                        <thead class="thead-light">
                             <tr>
                                 <th></th>
                                 <th>Январь</th>
@@ -110,24 +133,33 @@ const getData = async () => {
                         </thead>
                         <tbody>
                             <tr v-if="data.sales">
-                                <th scope="row">Выручка</th>
-                                <td>{{ data.sales.jan }}</td>
-                                <td>{{ data.sales.feb }}</td>
-                                <td>{{ data.sales.mar }}</td>
-                                <td>{{ data.sales.apr }}</td>
-                                <td>{{ data.sales.may }}</td>
-                                <td>{{ data.sales.jun }}</td>
-                                <td>{{ data.sales.jul }}</td>
-                                <td>{{ data.sales.aug }}</td>
-                                <td>{{ data.sales.sep }}</td>
-                                <td>{{ data.sales.oct }}</td>
-                                <td>{{ data.sales.nov }}</td>
-                                <td>{{ data.sales.dec }}</td>
-                                <td>{{ data.sales.all }}</td>
+                                <th scope="row" class="text-centered">Выручка</th>
+                                <td v-for="item in data.sales" :class="{'text-success': item > 0 }" v-html="getValue(item)" />
                             </tr>
 
-                            <tr>
+                            <tr v-if="data.consume">
                                 <th scope="row">Расходы ВБ</th>
+                                <td v-for="item in data.consume" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
+                            </tr>
+
+                            <tr v-if="data.penalty">
+                                <td scope="row">Штрафы ВБ</td>
+                                <td v-for="item in data.penalty" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
+                            </tr>
+
+                            <tr v-if="data.commission">
+                                <td scope="row">Комиссия ВБ</td>
+                                <td v-for="item in data.commission" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
+                            </tr>
+
+
+                            <tr v-if="data.delivery">
+                                <td scope="row">Логистика ВБ</td>
+                                <td v-for="item in data.delivery" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
+                            </tr>
+
+                            <tr>
+                                <td scope="row">Реклама ВБ</td>
                                 <td>0 ₽</td>
                                 <td>0 ₽</td>
                                 <td>0 ₽</td>
@@ -144,7 +176,7 @@ const getData = async () => {
                             </tr>
 
                             <tr>
-                                <th scope="row">Комиссия ВБ</th>
+                                <td scope="row">Хранение ВБ</td>
                                 <td>0 ₽</td>
                                 <td>0 ₽</td>
                                 <td>0 ₽</td>
@@ -160,55 +192,9 @@ const getData = async () => {
                                 <td>0 ₽</td>
                             </tr>
 
-                            <tr>
-                                <th scope="row">Логистика ВБ</th>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                            </tr>
-
-                            <tr>
-                                <th scope="row">Реклама ВБ</th>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                            </tr>
-
-                            <tr>
-                                <th scope="row">Хранение ВБ</th>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
+                            <tr v-if="data.all" class="table-light">
+                                <th scope="row">К перечислению</th>
+                                <td v-for="item in data.all" :class="{'text-success': item > 0, 'text-danger': item < 0 }"  v-html="getValue(item)" />
                             </tr>
                         </tbody>
                     </table>
