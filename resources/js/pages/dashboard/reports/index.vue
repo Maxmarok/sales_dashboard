@@ -60,7 +60,7 @@ const getSelect = (option) => {
 
 const getData = async () => {
 
-    await axios.post(`/api/v1/movements`, {lk_id: 1, year: filter.value.year})
+    await axios.post(`/api/v1/movements`, {lk_id: 2, year: filter.value.year})
         .then((res) => {
             console.log(res);
             if(res.data) {
@@ -156,40 +156,6 @@ const getValue = (num, sign = null) => {
                             <tr v-if="data.delivery">
                                 <td scope="row">Логистика ВБ</td>
                                 <td v-for="item in data.delivery" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
-                            </tr>
-
-                            <tr>
-                                <td scope="row">Реклама ВБ</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                            </tr>
-
-                            <tr>
-                                <td scope="row">Хранение ВБ</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
-                                <td>0 ₽</td>
                             </tr>
 
                             <tr v-if="data.all" class="table-light">

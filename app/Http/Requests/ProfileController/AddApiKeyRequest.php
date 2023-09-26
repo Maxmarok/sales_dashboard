@@ -31,12 +31,12 @@ class AddApiKeyRequest extends FormRequest
                 'required',
                 'string',
                 'in:statistic,standard,ad',
-                function(string $attribute, mixed $value, Closure $fail){
-                    $query = DB::table('api_keys')->whereIn('lk_id', Auth()->user()->lk->pluck('id')->all())->where('type', $value)->where('marketplace', $this->marketplace)->exists();
-                    if($query){
-                        $fail('Ключ этого типа уже добавлен');
-                    }
-                }
+                // function(string $attribute, mixed $value, Closure $fail){
+                //     $query = DB::table('api_keys')->whereIn('lk_id', Auth()->user()->lk->pluck('id')->all())->where('type', $value)->where('marketplace', $this->marketplace)->exists();
+                //     if($query){
+                //         $fail('Ключ этого типа уже добавлен');
+                //     }
+                // }
                 ],
             'lk_id' => [
                 'required',

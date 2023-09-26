@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue"
-import LoginModal from '@/components/LoginModal.vue'
-import RegisterModal from '@/components/RegisterModal.vue'
+import LoginModal from '@/components/modals/LoginModal.vue'
+import RegisterModal from '@/components/modals/RegisterModal.vue'
 
 
 

@@ -49,6 +49,10 @@ Route::group([
                 Route::post('/delete', [App\Http\Controllers\API\ProfileController::class, 'lkDelete']);
                 Route::post('/update/{id}', [App\Http\Controllers\API\ProfileController::class, 'lkUpdate']);
             });
+
+            Route::prefix('account')->group(function(){
+                Route::get('/list', [App\Http\Controllers\API\OperationsController::class, 'accounts']);
+            });
         });
 
         Route::post('movements', [App\Http\Controllers\API\SalesController::class, 'movements']);

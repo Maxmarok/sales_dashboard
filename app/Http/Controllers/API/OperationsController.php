@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Http\Controllers\API;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\AddAccountRequest;
+use App\Services\OperationsController\OperationsService;
+use Illuminate\Http\Request;
+
+class OperationsController extends Controller
+{
+    public function accounts()
+    {
+        return (new OperationsService())->accounts();
+    }
+
+    public function add_account(AddAccountRequest $request)
+    {
+        return (new OperationsService())->add_account();
+    }
+
+}

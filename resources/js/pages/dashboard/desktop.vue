@@ -27,8 +27,6 @@ const series = ref([
         name: "Расходы",
         data: consume,
     },
-
-
 ])
 
 const chartOptions = ref({
@@ -44,25 +42,14 @@ const chartOptions = ref({
     dataLabels: {
         enabled: false
     },
-    // stroke: {
-    //     width: [3, 4, 3],
-    //     curve: 'straight',
-    //     dashArray: [0, 8, 5]
-    // },
-    markers: {
-        size: 0,
-
-        hover: {
-            sizeOffset: 6
-        }
+    stroke: {
+        width: [3, 3],
+        curve: 'smooth',
     },
     xaxis: {
         categories: days,
     },
-
 })
-
-
 
 const getData = async () => {
     await axios.get('/api/v1/dashboard')
@@ -79,7 +66,6 @@ const getValue = (num, sign = null) => {
     return str
 }
 
-
 onMounted(() => {
     getData().then(() => {
         data.value.sales.forEach((item) => {
@@ -89,7 +75,6 @@ onMounted(() => {
                 x: item.date_short,
                 y: Math.round(item.forPay, 2)
             })
-
             
             if(i !== -1) {
                 let report = data.value.reports[i]

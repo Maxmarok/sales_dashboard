@@ -24,8 +24,9 @@
     margin-top: auto;
   }
 
-  .fc-daygrid-day-number {
-    font-size: 20px;
+  .fc-daygrid-day-number,
+  .fc-col-header-cell-cushion {
+    font-size: 18px;
     color: #000;
 
     &:hover{
@@ -35,17 +36,7 @@
   }
 
   .fc-h-event .fc-event-title {
-    font-size: 16px;
-  }
-
-  .fc-col-header-cell-cushion {
-    font-size: 20px;
-    color: #000;
-
-    &:hover{
-      text-decoration: none;
-      cursor: default;
-    }
+    font-size: 14px;
   }
 
   .fc-col-header-cell {
