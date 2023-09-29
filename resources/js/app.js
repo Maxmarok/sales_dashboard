@@ -9,6 +9,10 @@ import VueTheMask from 'vue-the-mask'
 import VueCookies from 'vue-cookies'
 import VueSweetalert2 from 'vue-sweetalert2'
 import VueApexCharts from "vue3-apexcharts"
+import VuePersianDatetimePicker from 'vue3-persian-datetime-picker'
+
+import moment from 'moment'
+import ru from 'moment/locale/ru'
 
 const app = createApp(App)
 app.use(VueTheMask)
@@ -24,5 +28,16 @@ axios.interceptors.request.use(function (config) {
 });
 
 app.use(router)
+
+moment.updateLocale('ru', ru)
+
+app.use(VuePersianDatetimePicker, {
+    name: 'date-picker',
+    props: {
+      color: '#9FC054',
+      autoSubmit: true,
+      locale: 'ro',
+    }
+}, 'DatePicker')
 
 app.mount("#app")

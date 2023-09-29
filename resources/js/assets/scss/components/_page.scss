@@ -33,3 +33,7 @@ body[data-sidebar="dark"] {
         background-color: #158f6b !important;
     }
 }
+
+.form-control::placeholder {
+    color: #ced4da;
+}

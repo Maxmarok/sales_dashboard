@@ -44,22 +44,31 @@ onMounted(() => {
                 </div>
                 <div class="table-responsive mt-3">
                 <table
-                    class="table table-centered datatable dt-responsive nowrap"
+                    class="table datatable dt-responsive nowrap"
                     style="border-collapse: collapse; border-spacing: 0; width: 100%;"
                     v-if="data"
                 >
                     <thead class="thead-light">
                     <tr>
                         <th>Название</th>
-                        <th>Дата добавления</th>
+                        <th>Баланс</th>
+                        <th>Банк</th>
+                        <th>БИК</th>
+                        <th>К/С</th>
+                        <th>Номер</th>
+                        <th>Валюта</th>
                         <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr v-for="(item, index) in data" :key="index">
-                        <td>{{item.name}}</td>
-                        <td>{{item.tax}}</td>
-                        <td>{{item.date}}</td>
+                        <td>{{item.title}} <br /> <span class="font-size-12">{{ item.store_name }}</span></td>
+                        <td>{{item.balance}}</td>
+                        <td>{{item.bank}}</td>
+                        <td>{{item.bic}}</td>
+                        <td>{{item.ks}}</td>
+                        <td>{{item.number}}</td>
+                        <td>{{item.currency}}</td>
                         <td>
                             <router-link
                                 :to="{name: 'StoreChange', params: {id: item.id}}"

@@ -24,7 +24,7 @@ defineExpose({ show: _show, hide: _hide });
 <template>
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby=""
     aria-hidden="true" ref="modalEle">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">{{ title }}</h5>
@@ -34,10 +34,10 @@ defineExpose({ show: _show, hide: _hide });
           <slot name="body" />
         </div>
         <div class="modal-footer">
-          <slot name="footer"></slot>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="_hide">
-            Close
+            Закрыть
           </button>
+          <slot name="footer"></slot>
         </div>
       </div>
     </div>

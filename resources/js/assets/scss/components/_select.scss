@@ -70,3 +70,7 @@
     background: $primary !important;
     color: $white !important;
   }
+
+  .multiselect-single-label {
+    @include font-size($input-font-size);
+  }

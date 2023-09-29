@@ -33,6 +33,7 @@
         "vue3-datepicker": "^0.4.0",
         "vue3-dropzone": "^2.1.2",
         "vue3-form-wizard": "^0.2.1",
+        "vue3-persian-datetime-picker": "^1.2.2",
         "vuex": "^4.1.0",
         "vuex-persistedstate": "^4.1.0"
     }

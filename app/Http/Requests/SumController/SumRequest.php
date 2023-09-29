@@ -27,7 +27,6 @@ class SumRequest extends FormRequest
             // 'dateTo' => 'required|date_format:"Y-m-d"',
             'year' => 'required|string|in:2022,2023',
             'lk_id' => [
-                'required',
                 'integer',
                 'exists:lks,id',
                 function(string $attribute, mixed $value, Closure $fail){

@@ -52,6 +52,12 @@ Route::group([
 
             Route::prefix('account')->group(function(){
                 Route::get('/list', [App\Http\Controllers\API\OperationsController::class, 'accounts']);
+                Route::post('/add', [App\Http\Controllers\API\OperationsController::class, 'add_account']);
+            });
+
+            Route::prefix('operation')->group(function(){
+                Route::get('/list', [App\Http\Controllers\API\OperationsController::class, 'operations']);
+                Route::post('/add', [App\Http\Controllers\API\OperationsController::class, 'add_operation']);
             });
         });
 
