@@ -59,6 +59,12 @@ Route::group([
                 Route::get('/list', [App\Http\Controllers\API\OperationsController::class, 'operations']);
                 Route::post('/add', [App\Http\Controllers\API\OperationsController::class, 'add_operation']);
             });
+
+            Route::prefix('article')->group(function(){
+                Route::get('/list', [App\Http\Controllers\API\OperationsController::class, 'articles']);
+                Route::post('/add', [App\Http\Controllers\API\OperationsController::class, 'add_article']);
+                Route::post('/update', [App\Http\Controllers\API\OperationsController::class, 'update_article']);
+            });
         });
 
         Route::post('movements', [App\Http\Controllers\API\SalesController::class, 'movements']);

@@ -7,6 +7,14 @@ defineProps({
     type: String,
     default: "Title 123",
   },
+  center: {
+    type: Boolean,
+    default: false
+  },
+  large: {
+    type: Boolean,
+    default: true
+  },
 });
 
 const modalEle = ref();
@@ -24,11 +32,12 @@ defineExpose({ show: _show, hide: _hide });
 <template>
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby=""
     aria-hidden="true" ref="modalEle">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog" 
+      :class="{'modal-dialog-centered': center, 'modal-xl': large}">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">{{ title }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="_hide"></button>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" @click="_hide">&times;</button>
         </div>
         <div class="modal-body">
           <slot name="body" />

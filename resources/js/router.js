@@ -1,8 +1,10 @@
 import { createWebHistory, createRouter } from "vue-router";
 import Landing from '@/pages/Landing.vue'
 import Reports from '@/pages/dashboard/reports/index.vue'
-import Operations from '@/pages/dashboard/operations/index.vue'
-import Accounts from '@/pages/dashboard/accounts/index.vue'
+import Finances from '@/pages/dashboard/finances/index.vue'
+import Operations from '@/pages/dashboard/finances/operations.vue'
+import Accounts from '@/pages/dashboard/finances/accounts.vue'
+import Articles from '@/pages/dashboard/finances/articles.vue'
 import Calendar from '@/pages/dashboard/calendar/index.vue'
 import Stores from '@/pages/dashboard/stores/index.vue'
 import StoreChange from '@/pages/dashboard/stores/change.vue'
@@ -69,15 +71,30 @@ const routes = [
                 ],
             },
             {
-                name: 'Operations',
-                path: 'operations',
-                component: Operations,
+                name: 'Finances',
+                path: 'finances',
+                component: Finances,
+                redirect: { name: 'Operations' },
+                children: [
+                    {
+                        name: 'Operations',
+                        path: 'operations',
+                        component: Operations,
+                    },
+                    {
+                        name: 'Accounts',
+                        path: 'accounts',
+                        component: Accounts,
+                    },
+                    {
+                        name: 'Articles',
+                        path: 'articles',
+                        component: Articles,
+                    },
+                    
+                ]
             },
-            {
-                name: 'Accounts',
-                path: 'accounts',
-                component: Accounts,
-            },
+
             {
                 name: 'Calendar',
                 path: 'calendar',

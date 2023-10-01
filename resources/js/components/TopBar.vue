@@ -1,6 +1,6 @@
 <script setup>
 import { defineEmits } from 'vue';
-const emit = defineEmits('toggleMenu')
+const emit = defineEmits(['toggleMenu'])
 
 const onToggleMenu = () => {
     emit('toggleMenu');

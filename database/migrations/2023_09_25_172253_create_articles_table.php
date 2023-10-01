@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
             $table->text('title')->nullable();
-            $table->text('desciption')->nullable();
-            $table->enum('article', ['consume', 'profit'])->nullable();
+            $table->text('description')->nullable();
+            $table->enum('article_type', ['consume', 'profit'])->nullable();
             $table->enum('type', ['main', 'buying', 'invest', 'credit', 'profit'])->nullable();
             $table->foreignId('user_id')->references('id')->on('users');
             $table->timestamps();

@@ -45,9 +45,23 @@ const menuItems = ref([
     },
 
     {
-      label: 'Операции',
-      icon: 'ri-arrow-left-right-fill',
-      link: '/dashboard/operations',
+      label: 'Финансы',
+      icon: 'ri-file-text-line',
+      link: '/dashboard/finances',
+      subItems: [
+        {
+          label: 'Операции расчета',
+          link: '/dashboard/finances/operations'
+        },
+        {
+          label: 'Банковские счета',
+          link: '/dashboard/finances/accounts'
+        },
+        {
+          label: 'Статьи операций',
+          link: '/dashboard/finances/articles'
+        },
+      ]
     },
 
     {
@@ -69,11 +83,11 @@ const menuItems = ref([
       link: '/dashboard/calendar',
     },
 
-    {
-      label: 'Банковские счета',
-      icon: 'ri-file-text-line',
-      link: '/dashboard/accounts',
-    },
+    // {
+    //   label: 'Банковские счета',
+    //   icon: 'ri-file-text-line',
+    //   link: '/dashboard/accounts',
+    // },
 
     {
       label: 'Магазины',

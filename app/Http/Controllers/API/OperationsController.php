@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\OperationsController\AddOperationRequest;
 use App\Http\Requests\OperationsController\AddAccountRequest;
+use App\Http\Requests\OperationsController\AddArticleRequest;
+use App\Http\Requests\OperationsController\UpdateArticleRequest;
 use App\Services\OperationsController\OperationsService;
 use Illuminate\Http\Request;
 
@@ -29,4 +31,22 @@ class OperationsController extends Controller
     {
         return (new OperationsService())->add_operation($request->validated());
     }
+
+    public function articles()
+    {
+        return (new OperationsService())->articles();
+    }
+
+    public function add_article(AddArticleRequest $request)
+    {
+        return (new OperationsService())->add_article($request->validated());
+    }
+
+    public function update_article(UpdateArticleRequest $request)
+    {
+        return (new OperationsService())->update_article($request->validated());
+    }
+
+
+    
 }

@@ -38,7 +38,7 @@ onMounted(() => {
         ref="modalAccount" 
         :title="modalTitle"
         :type="modalType"
-        @getData="getData"
+        @action="getData"
     />
     <PageHeader :title="title" :items="items" />
     <div class="row">
@@ -71,12 +71,12 @@ onMounted(() => {
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="(item, index) in data" :key="index">
+                        <tr v-for="(item, index) in data" :key="index" :class="{'table-success': item.type === 'profit', 'table-danger': item.type === 'consume'}">
                             <td>{{item.account_name}} <br /> <span class="font-size-12">{{ item.description }}</span></td>
                             <td>{{item.date}}</td>
                             <td>
-                                <span class="text-success" v-html="`+ ${item.value}`" v-if="item.type === 'profit'" />
-                                <span class="text-danger" v-html="`- ${item.value}`" v-if="item.type === 'consume'" />
+                                <span v-html="`+ ${item.value}`" v-if="item.type === 'profit'" />
+                                <span v-html="`- ${item.value}`" v-if="item.type === 'consume'" />
                             </td>
                             
                             <td>{{item.art}}</td>

@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 
-class AddOperationRequest extends FormRequest
+class UpdateArticleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,40 +24,20 @@ class AddOperationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'art' => [
-                'max:255',
-            ],
-            'value' => [
-                'required',
-                'integer',
-                'max:100000000',
-            ],
-            'date' => [
-                'required',
-                'date',
-            ],
-            'description' => [
+            'title' => [
                 'required',
                 'string',
                 'max:255',
             ],
+            'description' => [
+                'sometimes',
+                'max:255',
+            ],
             'type' => [
                 'required',
-                'in:consume,profit',
+                'in:main,buying,invest,credit,profit',
             ],
-            'account_id' => [
-                'required',
-                'integer',
-                'exists:bank_accounts,id',
-                function(string $attribute, mixed $value, Closure $fail){
-                    $query = DB::table('bank_accounts')->where('id', $value)
-                    ->where('user_id', Auth()->id())->exists();
-                    if(!$query){
-                        $fail('Этот счет вам не принадлежит');
-                    }
-                }
-            ],
-            'article_id' => [
+            'id' => [
                 'required',
                 'integer',
                 'exists:articles,id',
