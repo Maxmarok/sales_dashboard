@@ -35,6 +35,7 @@ Route::group([
             Route::patch('update', [App\Http\Controllers\API\ProfileController::class, 'update']);
             #TODO добавить permission на API KEY
             Route::post('add-api-key', [App\Http\Controllers\API\ProfileController::class, 'addApiKey']);
+            Route::post('change-api-key', [App\Http\Controllers\API\ProfileController::class, 'changeApiKey']);
             Route::post('delete-api-key', [App\Http\Controllers\API\ProfileController::class, 'deleteApiKey']);
             Route::get('api-key/list', [App\Http\Controllers\API\ProfileController::class, 'apiKeyList']);
             //API KEYS list api keys for user
@@ -47,7 +48,7 @@ Route::group([
                 Route::post('/add', [App\Http\Controllers\API\ProfileController::class, 'addLk']);
                 Route::get('/list', [App\Http\Controllers\API\ProfileController::class, 'listLk']);
                 Route::post('/delete', [App\Http\Controllers\API\ProfileController::class, 'lkDelete']);
-                Route::post('/update/{id}', [App\Http\Controllers\API\ProfileController::class, 'lkUpdate']);
+                Route::post('/update', [App\Http\Controllers\API\ProfileController::class, 'updateLk']);
             });
 
             Route::prefix('account')->group(function(){

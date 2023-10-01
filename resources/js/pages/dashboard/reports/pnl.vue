@@ -128,61 +128,58 @@ const getValue = (num, sign = null) => {
 <div class="row">
   <div class="col-12">
     <div class="card">
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-striped table-sticky mb-0 text-nowrap text-center">
-            <thead class="thead-light">
-              <tr>
-                <th></th>
-                <th>Январь</th>
-                <th>Февраль</th>
-                <th>Март</th>
-                <th>Апрель</th>
-                <th>Май</th>
-                <th>Июнь</th>
-                <th>Июль</th>
-                <th>Август</th>
-                <th>Сентябрь</th>
-                <th>Октябрь</th>
-                <th>Ноябрь</th>
-                <th>Декабрь</th>
-                <th>Итого за год</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-if="data.sales">
-                <th scope="row" class="text-centered">Выручка</th>
-                <td v-for="item in data.sales" :class="{'text-success': item > 0 }" v-html="getValue(item)" />
-              </tr>
+      <div class="table-responsive">
+        <table class="table table-sticky mb-0 text-nowrap text-center">
+          <thead class="thead-light">
+            <tr>
+              <th></th>
+              <th>Январь</th>
+              <th>Февраль</th>
+              <th>Март</th>
+              <th>Апрель</th>
+              <th>Май</th>
+              <th>Июнь</th>
+              <th>Июль</th>
+              <th>Август</th>
+              <th>Сентябрь</th>
+              <th>Октябрь</th>
+              <th>Ноябрь</th>
+              <th>Декабрь</th>
+              <th>Итого за год</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="data.sales">
+              <th scope="row" class="text-centered">Выручка</th>
+              <td v-for="item in data.sales" :class="{'text-success': item > 0 }" v-html="getValue(item)" />
+            </tr>
 
-              <tr v-if="data.consume">
-                <th scope="row">Расходы ВБ</th>
-                <td v-for="item in data.consume" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
-              </tr>
+            <tr v-if="data.consume">
+              <th scope="row">Расходы ВБ</th>
+              <td v-for="item in data.consume" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
+            </tr>
 
-              <tr v-if="data.penalty">
-                <th scope="row">Штрафы ВБ</th>
-                <td v-for="item in data.penalty" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
-              </tr>
+            <tr v-if="data.penalty">
+              <th scope="row">Штрафы ВБ</th>
+              <td v-for="item in data.penalty" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
+            </tr>
 
-              <tr v-if="data.commission">
-                <th scope="row">Комиссия ВБ</th>
-                <td v-for="item in data.commission" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
-              </tr>
+            <tr v-if="data.commission">
+              <th scope="row">Комиссия ВБ</th>
+              <td v-for="item in data.commission" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
+            </tr>
 
+            <tr v-if="data.delivery">
+              <th scope="row">Логистика ВБ</th>
+              <td v-for="item in data.delivery" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
+            </tr>
 
-              <tr v-if="data.delivery">
-                <th scope="row">Логистика ВБ</th>
-                <td v-for="item in data.delivery" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
-              </tr>
-
-              <tr v-if="data.all" class="table-light">
-                <th scope="row">К перечислению</th>
-                <td v-for="item in data.all" :class="{'text-success': item > 0, 'text-danger': item < 0 }"  v-html="getValue(item)" />
-              </tr>
-            </tbody>
-          </table>
-        </div>
+            <tr v-if="data.all" class="table-light">
+              <th scope="row">К перечислению</th>
+              <td v-for="item in data.all" :class="{'text-success': item > 0, 'text-danger': item < 0 }"  v-html="getValue(item)" />
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

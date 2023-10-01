@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LeftoversController\LeftoversRequest;
 use App\Http\Requests\ProfileController\AddApiKeyRequest;
 use App\Http\Requests\ProfileController\AddLkRequest;
+use App\Http\Requests\ProfileController\ChangeApiKeyRequest;
 use App\Http\Requests\ProfileController\DeleteApiKeyRequest;
+use App\Http\Requests\ProfileController\UpdateLkRequest;
 use App\Http\Requests\ProfileController\UpdateRequest;
 use App\Models\ApiKey;
 use App\Models\Lk;
@@ -23,6 +25,16 @@ class ProfileController extends Controller
     public function addApiKey(AddApiKeyRequest $request)
     {
         return (new ProfileService())->addApiKey($request->validated());
+    }
+
+    public function changeApiKey(ChangeApiKeyRequest $request)
+    {
+        return (new ProfileService())->changeApiKey($request->validated());
+    }
+
+    public function updateLk(UpdateLkRequest $request)
+    {
+        return (new ProfileService())->updateLk($request->validated());
     }
 
     public function userInfo()

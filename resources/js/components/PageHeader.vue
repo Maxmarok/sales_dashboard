@@ -26,6 +26,8 @@ export default {
         <!-- <div class="page-title-right">
           <b-breadcrumb :items="items" class="m-0"></b-breadcrumb>
         </div> -->
+    
+        <slot name="right"></slot>
       </div>
     </div>
   </div>

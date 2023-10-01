@@ -45,8 +45,8 @@ const menuItems = ref([
     },
 
     {
-      label: 'Финансы',
-      icon: 'ri-file-text-line',
+      label: 'Операции',
+      icon: 'ri-arrow-left-right-fill',
       link: '/dashboard/finances',
       subItems: [
         {
@@ -66,7 +66,7 @@ const menuItems = ref([
 
     {
       label: 'Отчеты',
-      icon: 'ri-table-line',
+      icon: 'mdi mdi-view-list',
       link: '/dashboard/reports',
       subItems: [
         {
@@ -83,7 +83,7 @@ const menuItems = ref([
 
     {
       label: 'Платежный календарь',
-      icon: 'ri-grid-fill',
+      icon: 'mdi mdi-calendar-month-outline',
       link: '/dashboard/calendar',
     },
 

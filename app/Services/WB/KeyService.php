@@ -18,7 +18,7 @@ class KeyService extends WBMain {
      * @param array $data
      * @return JsonResponse
      */
-    public function addKey(array $data)
+    public function addKey(array $data, bool $init = false)
     {
         $user = Auth()->user();
 
@@ -57,7 +57,7 @@ class KeyService extends WBMain {
 
             if($data['type'] === 'statistic') {
                 $response = json_decode($request->getBody(), true);
-                if($response) (new PrimaryDataService())->loadData($data['type'], $data['lk_id'], $response);
+                if($response && $init) (new PrimaryDataService())->loadData($data['type'], $data['lk_id'], $response);
             }
 
         }catch (GuzzleException $exception){
@@ -77,22 +77,23 @@ class KeyService extends WBMain {
             };
         }
         
-        $key = ApiKey::create($data);
-
-        if($data['type'] === 'statistic') UpdateReportByPeriodJob::dispatch($user);
-
-        if($data['type'] === 'ad') {
-            return Response()->json([
-                "code" => 200,
-                "data" => auth()->user()->lk
-            ]);
+        if($init) {
+            $key = ApiKey::create($data);
         } else {
+            $key = ApiKey::where('id', $data['id'])->update($data);
+
             return Response()->json([
                 "code" => 200,
-                "data" => new CreateKeyResource($key)
+                "data" => $key
             ]);
-        } 
+        }
         
+        if($data['type'] === 'statistic' && $init) UpdateReportByPeriodJob::dispatch($user);
+
+        return Response()->json([
+            "code" => 200,
+            "data" => new CreateKeyResource($key)
+        ]);
     }
 
     public function getData($id, $key, $url, $type)

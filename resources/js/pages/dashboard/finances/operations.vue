@@ -49,10 +49,9 @@ onMounted(() => {
         :item="modalItem"
         @action="getData"
     />
-    <PageHeader :title="title" :items="items" />
-    <div class="row">
-        <div class="col-12">
-            <div class="col-12 row mb-3">
+    <PageHeader :title="title" :items="items">
+        <template #right>
+            <div>
                 <button @click="openCreateModal('Добавить приход', 'profit')" class="btn btn-sm btn-success">
                     <i class="mdi mdi-plus mr-2"></i> Добавить приход
                 </button>
@@ -61,49 +60,51 @@ onMounted(() => {
                     <i class="mdi mdi-minus mr-2"></i> Добавить расход
                 </button>
             </div>
+        </template>
+    </PageHeader>
+    <div class="row">
+        <div class="col-12">
             <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table
-                            class="table table-centered datatable dt-responsive nowrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;"
-                            v-if="data"
-                        >
-                            <thead class="thead-light">
-                            <tr>
-                                <th>Операция</th>
+                <div class="table-responsive">
+                    <table
+                        class="table table-centered datatable dt-responsive nowrap mb-0"
+                        style="border-collapse: collapse; border-spacing: 0; width: 100%;"
+                        v-if="data"
+                    >
+                        <thead class="thead-light">
+                        <tr>
+                            <th>Операция</th>
+                            
+                            <th>Дата</th>
+                            <th>Счет</th>
+                            <th>Статья</th>
+                            <th>Артикул</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(item, index) in data" :key="index">
+                            <td>
+                                <span class="text-success" v-html="`+ ${getValue(item.value, item.currency_sign)}`" v-if="item.type === 'profit'" />
+                                <span class="text-danger" v-html="`- ${getValue(item.value, item.currency_sign)}`" v-if="item.type === 'consume'" />
                                 
-                                <th>Дата</th>
-                                <th>Счет</th>
-                                <th>Статья</th>
-                                <th>Артикул</th>
-                                <th></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr v-for="(item, index) in data" :key="index">
-                                <td>
-                                    <span class="text-success" v-html="`+ ${getValue(item.value, item.currency_sign)}`" v-if="item.type === 'profit'" />
-                                    <span class="text-danger" v-html="`- ${getValue(item.value, item.currency_sign)}`" v-if="item.type === 'consume'" />
-                                    
-                                </td>
-                                <td>{{item.date}}</td>
-                                <td>{{item.account_name}}</td>
-                                <td>{{item.article_name}}<br /> <span class="font-size-12 text-secondary">{{ item.description }}</span></td>
-                                
-                                <td>
-                                    <span v-if="item.art" v-html="item.art" />
-                                    <span v-else class="text-secondary font-size-12">Без артикула</span>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary d-flex mx-auto" @click="openCreateModal('Изменить операцию', item.type, item)">
-                                        Изменить  <i class="mdi mdi-pencil font-size-14 ml-2"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                            </td>
+                            <td>{{item.date}}</td>
+                            <td>{{item.account_name}}</td>
+                            <td>{{item.article_name}}<br /> <span class="font-size-12 text-secondary">{{ item.description }}</span></td>
+                            
+                            <td>
+                                <span v-if="item.art" v-html="item.art" />
+                                <span v-else class="text-secondary font-size-12">Без артикула</span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-primary d-flex mx-auto" @click="openCreateModal('Изменить операцию', item.type, item)">
+                                    Изменить  <i class="mdi mdi-pencil font-size-14 ml-2"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

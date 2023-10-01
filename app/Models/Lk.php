@@ -28,7 +28,7 @@ class Lk extends Model
     //     'api_ad'
     // ];
 
-    protected $hidden = ['api_standard', 'api_statistic', 'api_ad', 'created_at', 'updated_at'];
+    protected $hidden = ['created_at', 'updated_at'];
 
     protected $appends = ['date', 'api_standard_key', 'api_statistic_key', 'api_ad_key'];
 
