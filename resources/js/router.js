@@ -1,6 +1,9 @@
-import { createWebHistory, createRouter } from "vue-router";
+import { createWebHistory, createRouter } from "vue-router"
+import store from '@/store'
 import Landing from '@/pages/Landing.vue'
 import Reports from '@/pages/dashboard/reports/index.vue'
+import Cashflow from '@/pages/dashboard/reports/cashflow.vue'
+import Pnl from '@/pages/dashboard/reports/pnl.vue'
 import Finances from '@/pages/dashboard/finances/index.vue'
 import Operations from '@/pages/dashboard/finances/operations.vue'
 import Accounts from '@/pages/dashboard/finances/accounts.vue'
@@ -16,34 +19,51 @@ import Register from '@/pages/auth/register.vue'
 import Dashboard from '@/pages/dashboard/index.vue'
 import Desktop from '@/pages/dashboard/desktop.vue'
 
+import auth from '@/middleware/auth'
+import middlewarePipeline from "@/middleware/middleware-pipeline"
+
 const routes = [
     {
         name: 'Landing',
         path: '/',
-        component: Landing
+        component: Landing,
+        redirect: { name: 'Dashboard' },
     },
     {
         name: 'Dashboard',
         path: '/dashboard',
         component: Dashboard,
+        meta: {
+            middleware: auth
+        },
         redirect: { name: 'Desktop' },
         children: [
             {
                 name: 'Desktop',
                 path: 'desktop',
                 component: Desktop,
+                // meta: {
+                //     middleware: auth
+                // },
             },
             {
                 name: 'Reports',
                 path: 'reports',
                 component: Reports,
+                redirect: { name: 'Cashflow' },
                 children: [
                     {
-                        name: 'ReportsItem',
-                        path: ':id?',
-                        component: Reports
+                        name: 'Cashflow',
+                        path: 'cashflow',
+                        component: Cashflow
                     },
-                ],
+
+                    {
+                        name: 'Pnl',
+                        path: 'pnl',
+                        component: Pnl
+                    },
+                ]
             },
             {
                 name: 'Stores',
@@ -119,6 +139,16 @@ const routes = [
                 path: 'register',
                 component: Register
             },
+            {
+                name: 'Logout',
+                path: 'logout',
+
+                redirect: to => {
+                    store.dispatch("logout")
+                    return { name: 'Login'}
+                }
+
+            }
         ]
     },
 
@@ -132,6 +162,29 @@ const router = createRouter({
     history: createWebHistory(),
     routes,
 });
+
+router.beforeEach((to, from, next) => {
+
+    if (!to.meta.middleware) {
+        return next()
+    }
+    
+    const middleware = Array.isArray(to.meta.middleware)
+    ? to.meta.middleware
+    : [to.meta.middleware];
+
+    const context = {
+        to,
+        from,
+        next,
+        store
+    };
+
+    return middleware[0]({
+        ...context,
+        next: middlewarePipeline(context, middleware, 1),
+    });
+})
 
 export default router
   

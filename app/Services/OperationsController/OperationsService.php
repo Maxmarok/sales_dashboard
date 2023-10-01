@@ -11,7 +11,7 @@ class OperationsService{
     public function accounts()
     {
         $user = auth()->user();
-        $data = Accounts::where('user_id', $user->id)->get();
+        $data = Accounts::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
 
         return $data;
     }
@@ -19,7 +19,7 @@ class OperationsService{
     public function operations()
     {
         $user = auth()->user();
-        $data = Operations::where('user_id', $user->id)->get();
+        $data = Operations::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
 
         return $data;
     }
@@ -27,7 +27,7 @@ class OperationsService{
     public function articles()
     {
         $user = auth()->user();
-        $data = Articles::where('user_id', $user->id)->get();
+        $data = Articles::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
 
         return $data;
     }
@@ -62,6 +62,26 @@ class OperationsService{
         return response()->json([
             "message" => "200",
             "account" => $account
+        ]);
+    }
+
+    public function update_account(array $data)
+    {
+        $update = Accounts::where('user_id', Auth()->id())->where('id', $data['id'])->update($data);
+
+        return response()->json([
+            "message" => "200",
+            "update" => $update
+        ]);
+    }
+
+    public function update_operation(array $data)
+    {
+        $update = Operations::where('user_id', Auth()->id())->where('id', $data['id'])->update($data);
+
+        return response()->json([
+            "message" => "200",
+            "update" => $update
         ]);
     }
 

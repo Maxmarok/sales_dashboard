@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->text('title')->nullable();
             $table->text('bank')->nullable();
-            $table->bigInteger('bic')->nullable();
-            $table->bigInteger('ks')->nullable();
-            $table->bigInteger('number')->nullable();
+            $table->text('bic')->nullable();
+            $table->text('ks')->nullable();
+            $table->text('number')->nullable();
             $table->enum('currency', ['RUB', 'KZT', 'BYR'])->nullable();
             $table->text('balance')->nullable();
             $table->foreignId('user_id')->references('id')->on('users');

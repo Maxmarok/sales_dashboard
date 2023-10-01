@@ -7,7 +7,7 @@ use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 
-class AddOperationRequest extends FormRequest
+class UpdateOperationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -66,6 +66,18 @@ class AddOperationRequest extends FormRequest
                     ->where('user_id', Auth()->id())->exists();
                     if(!$query){
                         $fail('Эта статья вам не принадлежит');
+                    }
+                }
+            ],
+            'id' => [
+                'required',
+                'integer',
+                'exists:operations,id',
+                function(string $attribute, mixed $value, Closure $fail){
+                    $query = DB::table('operations')->where('id', $value)
+                    ->where('user_id', Auth()->id())->exists();
+                    if(!$query){
+                        $fail('Эта операция вам не принадлежит');
                     }
                 }
             ]

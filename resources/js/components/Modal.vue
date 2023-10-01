@@ -43,7 +43,7 @@ defineExpose({ show: _show, hide: _hide });
           <slot name="body" />
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="_hide">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal" @click="_hide">
             Закрыть
           </button>
           <slot name="footer"></slot>

@@ -80,7 +80,7 @@ const formSubmit = async (type) => {
             })
             if(res.data) {
                 if(type === 'ad') {
-                    store.commit('saveStoreList', res.data.data)
+                    //store.commit('saveStoreList', res.data.data)
                     router.push({name: 'ReportsItem', params: {id: id}})
                 } else {
                     return true;

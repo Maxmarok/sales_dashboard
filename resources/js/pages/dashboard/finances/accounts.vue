@@ -14,7 +14,9 @@ const items = [
         active: true
     }
 ]
+const modalTitle = ref()
 const modalAccount = ref()
+const modalItem = ref()
 const data = ref([])
 const getData = () => {
     axios.get('/api/v1/profile/account/list')
@@ -22,7 +24,18 @@ const getData = () => {
             data.value = res.data
         })
 }
-const openCreateModal = () => modalAccount.value.showModal()
+
+const openCreateModal = (title, item) => {
+    modalTitle.value = title
+    modalItem.value = item
+    modalAccount.value.showModal()
+}
+
+const getValue = (num, sign = null) => {
+    let str =  Math.round(num, 0).toLocaleString()
+    return `${str} ${sign}`
+}
+
 onMounted(() => {
     getData()
 })
@@ -30,61 +43,82 @@ onMounted(() => {
 <template>
     <AddAccountModal 
         ref="modalAccount" 
-        :title="'Создать банковский счет'"
+        :title="modalTitle"
+        :item="modalItem"
+        @action="getData"
     />
     <PageHeader :title="title" :items="items" />
     <div class="row">
         <div class="col-12">
-           <div class="card">
-            <div class="card-body">
-                <div>
-                    <button @click="openCreateModal" class="btn btn-success mb-2">
-                        <i class="mdi mdi-plus mr-2"></i> Добавить банковский счёт
-                    </button>
-                </div>
-                <div class="table-responsive mt-3">
-                <table
-                    class="table datatable dt-responsive nowrap"
-                    style="border-collapse: collapse; border-spacing: 0; width: 100%;"
-                    v-if="data"
-                >
-                    <thead class="thead-light">
-                        <tr>
-                            <th>Название</th>
-                            <th>Баланс</th>
-                            <th>Банк</th>
-                            <th>Реквизиты</th>
-                            <th>Валюта</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(item, index) in data" :key="index">
-                            <td>{{item.title}} <br /> <span class="font-size-12">{{ item.store_name }}</span></td>
-                            <td>{{item.balance}}</td>
-                            <td>{{item.bank}}</td>
-                            <td>
-                                <span class="font-size-12" v-if="item.bic">Бик: {{item.bic}}</span> <br />
-                                <span class="font-size-12" v-if="item.ks">К/С: {{item.ks}}</span> <br />
-                                <span class="font-size-12" v-if="item.number">Номер: {{item.number}}</span> <br />
-                                
-                            </td>
-                            <td>{{item.currency_name}}</td>
-                            <td>
-                                <router-link
-                                    :to="{name: 'StoreChange', params: {id: item.id}}"
-                                    class="text-primary"
-                                    title="Редактировать"
-                                >
-                                    <i class="mdi mdi-pencil font-size-18"></i>
-                                </router-link>
-                                
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                </div>
+            <div class="mb-2">
+                <button @click="openCreateModal('Создать новый счет')" class="btn btn-sm btn-success mb-2">
+                    <i class="mdi mdi-plus mr-2"></i> Создать банковский счёт
+                </button>
             </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                    <table
+                        class="table table-centered datatable dt-responsive nowrap"
+                        style="border-collapse: collapse; border-spacing: 0; width: 100%;"
+                        v-if="data"
+                    >
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Название</th>
+                                <th>Баланс</th>
+                                <th>Банк</th>
+                                <th>Реквизиты</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(item, index) in data" :key="index">
+                                <td>{{item.title}} <br /> <span class="font-size-12 text-secondary">{{ item.store_name }}</span></td>
+                                <td>{{getValue(item.balance, item.currency_sign)}}</td>
+                                <td>
+                                    <span v-if="item.bank" v-html="item.bank" />
+                                    <span v-else class="text-secondary font-size-12">Не указан</span>
+                                </td>
+                                <td v-if="item.bic || item.ks || item.number">
+                                    <div>
+                                        <span class="font-size-12" v-if="item.bic">
+                                            Бик: {{item.bic}}
+                                        </span>
+
+                                        <span v-else class="text-secondary font-size-12">Бик не указан</span>
+                                    </div>
+
+                                    <div>
+                                        <span class="font-size-12" v-if="item.ks">
+                                            К/С: {{item.ks}}
+                                        </span>
+
+                                        <span v-else class="text-secondary font-size-12">К/С не указан</span>
+                                    </div>
+
+                                    <div>
+                                        <span class="font-size-12" v-if="item.number">
+                                            Номер: {{item.number}}
+                                        </span>
+
+                                        <span v-else class="text-secondary font-size-12">Номер не указан</span>
+                                    </div>
+                                    
+                                </td>
+                                <td v-else>
+                                    <span class="text-secondary font-size-12">Не указаны</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary d-flex mx-auto" @click="openCreateModal('Изменить счет', item)">
+                                        Изменить  <i class="mdi mdi-pencil font-size-14 ml-2"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

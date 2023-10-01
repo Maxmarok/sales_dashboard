@@ -44,7 +44,7 @@ class Lk extends Model
 
     public function getDateAttribute()
     {
-        return Carbon::parse($this->created_at)->format('H:i d.m.y');
+        return Carbon::parse($this->created_at)->format('d.m.y');
     }
 
     public function getApiStandardKeyAttribute()
@@ -80,6 +80,11 @@ class Lk extends Model
     public function api_keys(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(ApiKey::class, 'lk_id', 'id');
+    }
+
+    public function accounts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Accounts::class, 'lk_id', 'id');
     }
 
     protected function getShortKey($key): string

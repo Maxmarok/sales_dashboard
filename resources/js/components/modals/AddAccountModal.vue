@@ -1,13 +1,16 @@
 <script setup>
-import { onMounted, ref, defineExpose, defineProps, inject } from "vue"
+import { onMounted, ref, defineExpose, defineProps, defineEmits, inject, watch } from "vue"
 import Modal from "@/components/Modal.vue"
 import Multiselect from "@vueform/multiselect"
+const emits = defineEmits(['action'])
+const doAction = () => emits('action')
+
 const thisModal = ref(null)
 
 const _showModal = () => thisModal.value.show()
 
 defineExpose({ showModal: _showModal })
-defineProps({
+const props = defineProps({
   title: {
     type: String,
     default: "Модальное окно",
@@ -20,6 +23,10 @@ defineProps({
     type: Boolean,
     default: true
   },
+  item: {
+    type: Object,
+    default: null,
+  }
 });
 
 const data = ref({
@@ -42,7 +49,10 @@ const errors = ref({
   number: null,
   currency: null,
   balance: null,
+  id: null,
 })
+
+const showBalance = ref()
 
 const lkList = ref(null)
 const currencyList = ref([
@@ -70,31 +80,103 @@ const createAccount = () => {
       thisModal.value.hide()
       swal.fire({
         text: 'Банковский счет успешно добавлен!',
-        position: 'bottom-end',
+        position: 'top-end',
+        toast: true,
         showConfirmButton: false,
         icon: 'success',
-        backdrop: false,
         timer: 3000,
       })
-      getData()
+      doAction()
     })
     .catch(err => {
       if(err.response !== undefined) errors.value = err.response.data.errors
     })
 }
 
-const changeInput = (name) => {
-  if(errors.value[name]) errors.value[name] = null;
+const editAccount = () => {
+  axios.post('/api/v1/profile/account/update', data.value)
+    .then(res => {
+      thisModal.value.hide()
+      swal.fire({
+        text: 'Банковский счет успешно изменен!',
+        position: 'top-end',
+        toast: true,
+        showConfirmButton: false,
+        icon: 'success',
+        timer: 3000,
+      })
+      doAction()
+    })
+    .catch(err => {
+      if(err.response !== undefined) {
+        if(err.response.data.message !== undefined) {
+          swal.fire({
+            text: err.response.data.message,
+            position: 'bottom-end',
+            backdrop: false,
+            showConfirmButton: false,
+            icon: 'error',
+            timer: 5000,
+          })
+        }
+
+        if(err.response.data.errors !== undefined) errors.value = err.response.data.errors
+      }
+    })
+}
+
+const changeInput = (name, input) => {
+  if(errors.value[name]) errors.value[name] = null
+
+  if(name === 'balance') {
+    // console.log(name, parseInt(input.target.value.replace(/\s/g, '')))
+    // data.value[name] = getValue(parseInt(input.target.value.replace(/\s/g, '')))
+    
+    // showBalance.value = getValue(parseInt(input.target.value.replace(/\s/g, '')))
+    
+    data.value[name] = input.target.value !== '' ? getValue(input.target.value) : 0
+  }
+}
+
+const getValue = (num) => {
+    return parseInt(num.replace(/\s/g, '')).toLocaleString()
 }
 
 onMounted(() => {
   getData()
 })
 
+const setDefault = () => {
+  data.value.title = null
+  data.value.lk_id = null
+  data.value.bank = null
+  data.value.bic = null
+  data.value.ks = null
+  data.value.number = null
+  data.value.currency = null
+  data.value.balance = null
+  data.value.id = null
+}
+
+watch(() => props.item, function() {
+  if(props.item !== null) {
+    data.value.title = props.item.title
+    data.value.lk_id = props.item.lk_id
+    data.value.bank = props.item.bank
+    data.value.bic = props.item.bic
+    data.value.ks = props.item.ks
+    data.value.number = props.item.number
+    data.value.currency = props.item.currency
+    data.value.balance = getValue(props.item.balance)
+    data.value.id = props.item.id
+  } else {
+    setDefault()
+  }
+})
+
 </script>
 
 <template>
-  
   <Modal :title="title" ref="thisModal" size="xl">
     <template #body>
       <div class="row">
@@ -118,7 +200,7 @@ onMounted(() => {
             </div>
 
             <div class="form-group mb-4 col-lg-6">
-              <label for="name">Магазин</label>
+              <label for="lk_id">Магазин</label>
               <Multiselect
                 v-model="data.lk_id"
                 :reduce="option => option.id"
@@ -126,24 +208,23 @@ onMounted(() => {
                 :options="lkList"
                 :placeholder="'Выберите магазин'"
                 :searchable="true"
+                id="lk_id"
               />
 
               <div v-if="errors.lk_id" class="invalid-feedback">
                 <span v-for="error in errors.lk_id" v-html="error" />
               </div>
             </div>
-
           </div>
 
           <div class="col-12 row">
-
             <div class="form-group mb-4 col-lg-6">
-              <label for="name">Банк</label>
+              <label for="bank">Банк</label>
               <input
                   type="text"
                   class="form-control"
                   :class="{'is-invalid': errors.bank }"
-                  id="name"
+                  id="bank"
                   placeholder="Введите название банка"
                   v-model="data.bank"
               />
@@ -154,12 +235,12 @@ onMounted(() => {
             </div>
 
             <div class="form-group mb-4 col-lg-6">
-              <label for="name">БИК</label>
+              <label for="bic">БИК</label>
               <input
                   type="text"
                   class="form-control"
                   :class="{'is-invalid': errors.bic }"
-                  id="name"
+                  id="bic"
                   placeholder="Введите БИК банка"
                   v-model="data.bic"
               />
@@ -169,15 +250,14 @@ onMounted(() => {
             </div>
           </div>
 
-
           <div class="col-12 row">
             <div class="form-group mb-4 col-lg-6">
-              <label for="name">К/С</label>
+              <label for="ks">К/С</label>
               <input
                   type="text"
                   class="form-control"
                   :class="{'is-invalid': errors.ks }"
-                  id="name"
+                  id="ks"
                   placeholder="Введите К/С банка"
                   v-model="data.ks"
               />
@@ -204,14 +284,15 @@ onMounted(() => {
 
           <div class="col-12 row">
             <div class="form-group mb-4 col-lg-6">
-              <label for="name">Баланс</label>
+              <label for="balance">Баланс</label>
               <input
                   type="text"
                   class="form-control"
                   :class="{'is-invalid': errors.balance }"
-                  id="name"
+                  id="balance"
                   placeholder="Введите текущий баланс на счете"
                   v-model="data.balance"
+                  @input="(val) => changeInput('balance', val)"
               />
               <div v-if="errors.balance" class="invalid-feedback">
                 <span v-for="error in errors.balance " v-html="error" />
@@ -219,26 +300,27 @@ onMounted(() => {
             </div>
 
             <div class="form-group mb-4 col-lg-6">
-              <label for="name">Валюта</label>
+              <label for="currency">Валюта</label>
               <Multiselect
                 v-model="data.currency"
                 :class="{'is-invalid': errors.balance }"
                 :options="currencyList"
                 :placeholder="'Выберите валюту счета'"
                 :searchable="true"
+                id="currency"
               />
               <div v-if="errors.currency" class="invalid-feedback">
                 <span v-for="error in errors.currency " v-html="error" />
               </div>
             </div>
-
           </div>
 
         </div>
       </div>
     </template>
     <template #footer>
-      <button class="btn btn-primary" @click="createAccount">Создать счет</button>
+      <button class="btn btn-sm btn-primary" @click="editAccount" v-if="item">Сохранить изменения</button>
+      <button class="btn btn-sm btn-primary" @click="createAccount" v-else>Создать счет</button>
     </template>
   </Modal>
 </template>

@@ -29,6 +29,10 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
+  item: {
+    type: Object,
+    default: null,
+  }
 });
 
 const data = ref({
@@ -39,6 +43,7 @@ const data = ref({
   description: null,
   account_id: null,
   article_id: null,
+  id: null,
 })
 
 const errors = ref({
@@ -79,20 +84,39 @@ const getArticleList = async () => {
       articleList.value = res.data.map(x => {
         return {value: x.id, label: x.title, type: x.article_type}
       })
-      console.log('got article list')
     })
 }
 
-const createAccount = () => {
+const createOperation = () => {
   axios.post('/api/v1/profile/operation/add', data.value)
     .then(res => {
       thisModal.value.hide()
       swal.fire({
         text: 'Операция расчета успешно добавлена!',
-        position: 'bottom-end',
+        position: 'top-end',
+        toast: true,
         showConfirmButton: false,
         icon: 'success',
-        backdrop: false,
+        timer: 3000,
+      })
+      doAction()
+    })
+    .catch(err => {
+      if(err.response !== undefined) errors.value = err.response.data.errors
+    })
+}
+
+const editOperation = () => {
+  console.log(data.value)
+  axios.post('/api/v1/profile/operation/update', data.value)
+    .then(res => {
+      thisModal.value.hide()
+      swal.fire({
+        text: 'Операция успешно изменена!',
+        position: 'top-end',
+        toast: true,
+        showConfirmButton: false,
+        icon: 'success',
         timer: 3000,
       })
       doAction()
@@ -131,6 +155,31 @@ onMounted(() => {
 watch(() => props.type, function() {
   data.value.type = props.type
   getArticleOptions()
+});
+
+const setDefault = () => {
+  data.value.type = null
+  data.value.value = null
+  data.value.art = null
+  data.value.date = moment(moment.now()).format('DD.MM.YYYY'),
+  data.value.description = null
+  data.value.account_id = null
+  data.value.article_id = null
+}
+
+watch(() => props.item, function() {
+  if(props.item !== null) {
+    data.value.type = props.item.type
+    data.value.value = props.item.value
+    data.value.art = props.item.art
+    data.value.date = props.item.date
+    data.value.description = props.item.description
+    data.value.account_id = props.item.account_id
+    data.value.article_id = props.item.article_id
+    data.value.id = props.item.id
+  } else {
+    setDefault()
+  }
 });
 
 </script>
@@ -185,7 +234,7 @@ watch(() => props.type, function() {
               :searchable="true"
             />
 
-            <button @click="openCreateModal('Создать новую статью ', 'profit')" class="btn btn-outline-primary col-12 mt-2">
+            <button @click="openCreateModal('Создать новую статью ', 'profit')" class="btn btn-sm btn-outline-primary col-12 mt-2">
               <i class="mdi mdi-plus mr-2"></i> Добавить новую статью
             </button>
 
@@ -245,7 +294,8 @@ watch(() => props.type, function() {
       
     </template>
     <template #footer>
-      <button class="btn btn-primary" @click="createAccount">Создать счет</button>
+      <button class="btn btn-sm btn-primary" @click="editOperation" v-if="item">Сохранить изменения</button>
+      <button class="btn btn-sm btn-primary" @click="createOperation" v-else>{{ title }}</button>
     </template>
   </Modal>
 

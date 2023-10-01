@@ -6,7 +6,13 @@ const store = createStore({
     return {
       user: null,
       token: null,
-      storeList: null,
+    }
+  },
+  actions: {
+    logout (context) {
+      context.commit('saveUser', null)
+      context.commit('saveToken', null)
+      console.log(context.user)
     }
   },
   mutations: {
@@ -19,12 +25,14 @@ const store = createStore({
     saveStoreList (state, data) {
       state.storeList = data
     },
-
   },
   getters: {
     storeList (state, getters) {
-        return state.storeList
-    }
+      return state.storeList
+    },
+    auth (state, getters) {
+      return state.user
+    },
   },
   plugins: [createPersistedState()]
 })

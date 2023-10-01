@@ -41,7 +41,7 @@ onMounted(() => {
         :title="modalTitle"
         :type="modalType"
         :item="modalItem"
-        @getData="getData"
+        @action="getData"
     />
     <PageHeader :title="title" :items="items" />
 
@@ -50,10 +50,10 @@ onMounted(() => {
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title mb-3">Статьи расходов</h4>
-                    <button @click="openCreateModal('Создать статью расходов', 'consume')" class="btn btn-outline-danger col-12 mb-2">
+                    <button @click="openCreateModal('Создать статью расходов', 'consume')" class="btn btn-sm btn-outline-danger col-12 mb-2">
                         <i class="mdi mdi-plus mr-2"></i> Добавить статью расходов
                     </button>
-                    <button v-for="item in data.filter(x => x.article === 'consume')" @click="openCreateModal('Изменить статью расходов', 'consume', item)" class="btn btn-light col-12 mb-2">{{ item.title }} <i class="mdi mdi-pencil font-size-16" /></button>
+                    <button v-for="item in data.filter(x => x.article_type === 'consume')" @click="openCreateModal('Изменить статью расходов', 'consume', item)" class="btn btn-sm btn-light col-12 mb-2">{{ item.title }} <i class="mdi mdi-pencil" /></button>
                 </div>
             </div>
         </div>
@@ -62,10 +62,10 @@ onMounted(() => {
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title mb-3">Статьи доходов</h4>
-                    <button @click="openCreateModal('Создать статью доходов', 'profit')" class="btn btn-outline-success col-12 mb-2">
+                    <button @click="openCreateModal('Создать статью доходов', 'profit')" class="btn btn-sm btn-outline-success col-12 mb-2">
                         <i class="mdi mdi-plus mr-2"></i> Добавить статью доходов
                     </button>
-                    <button v-for="item in data.filter(x => x.article === 'profit')" @click="openCreateModal('Изменить статью доходов', 'profit', item)" class="btn btn-light col-12 mb-2">{{ item.title }} <i class="mdi mdi-pencil font-size-16" /></button>
+                    <button v-for="item in data.filter(x => x.article_type === 'profit')" @click="openCreateModal('Изменить статью доходов', 'profit', item)" class="btn btn-sm btn-light col-12 mb-2">{{ item.title }} <i class="mdi mdi-pencil" /></button>
                 </div>
             </div>
         </div>

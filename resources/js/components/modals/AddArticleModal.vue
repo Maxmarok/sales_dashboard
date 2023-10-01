@@ -56,10 +56,10 @@ const createArticle = () => {
       thisModal.value.hide()
       swal.fire({
         text: 'Статья операции успешно добавлена!',
-        position: 'bottom-end',
+        position: 'top-end',
+        toast: true,
         showConfirmButton: false,
         icon: 'success',
-        backdrop: false,
         timer: 3000,
       })
       doAction(res.data.account.id)
@@ -75,10 +75,10 @@ const editArticle = () => {
       thisModal.value.hide()
       swal.fire({
         text: 'Статья операции успешно изменена!',
-        position: 'bottom-end',
+        position: 'top-end',
+        toast: true,
         showConfirmButton: false,
         icon: 'success',
-        backdrop: false,
         timer: 3000,
       })
       doAction()
@@ -110,7 +110,7 @@ watch(() => props.item, function() {
   } else {
     setDefault()
   }
-});
+})
 
 watch(() => props.type, function() {
   if(props.type) data.value.article_type = props.type
@@ -252,8 +252,8 @@ watch(() => props.type, function() {
       </div>
     </template>
     <template #footer>
-      <button class="btn btn-primary" @click="editArticle" v-if="item">Сохранить изменения</button>
-      <button class="btn btn-primary" @click="createArticle" v-else>Создать статью</button>
+      <button class="btn btn-sm btn-primary" @click="editArticle" v-if="item">Сохранить изменения</button>
+      <button class="btn btn-sm btn-primary" @click="createArticle" v-else>Создать статью</button>
     </template>
 </Modal>
 </template>

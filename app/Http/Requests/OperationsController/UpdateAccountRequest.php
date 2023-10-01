@@ -2,11 +2,13 @@
 
 namespace App\Http\Requests\OperationsController;
 
+use Carbon\Carbon;
 use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
-class AddAccountRequest extends FormRequest
+class UpdateAccountRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -63,6 +65,18 @@ class AddAccountRequest extends FormRequest
                     ->where('user_id', Auth()->id())->exists();
                     if(!$query){
                         $fail('Этот ЛК вам не принадлежит');
+                    }
+                }
+            ],
+            'id' => [
+                'required',
+                'integer',
+                'exists:bank_accounts,id',
+                function(string $attribute, mixed $value, Closure $fail){
+                    $query = DB::table('bank_accounts')->where('id', $value)
+                    ->where('user_id', Auth()->id())->exists();
+                    if(!$query){
+                        $fail('Этот счет вам не принадлежит');
                     }
                 }
             ]

@@ -33,7 +33,9 @@ body[data-sidebar="dark"] {
         background-color: #158f6b !important;
     }
 }
-
+.form-control, .multiselect-option {
+    font-size: .9rem;
+}
 .form-control::placeholder {
     color: #ced4da;
 }

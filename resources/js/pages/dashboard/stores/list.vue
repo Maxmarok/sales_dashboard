@@ -21,6 +21,10 @@ const getData = () => {
         })
     //data.value = store.state.storeList
 }
+const getValue = (num, sign = null) => {
+    let str =  Math.round(num, 0).toLocaleString()
+    return `${str} ${sign}`
+}
 onMounted(() => {
     getData()
 })
@@ -46,49 +50,76 @@ onMounted(() => {
                     <thead class="thead-light">
                     <tr>
                         <th>Название</th>
-                        <th>Стандартный ключ API</th>
-                        <th>Ключ статистики API</th>
-                        <th>Ключ рекламы API</th>
-                        <th>Налог с выручки, %</th>
-                        <th>Дата добавления</th>
+                        
+                        <th>Подключенные счета</th>
+                        <th>Налог</th>
+                        <th>Ключи API</th>
                         <th>Отчеты</th>
                         <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr v-for="(item, index) in data" :key="index">
-                        <td>{{item.name}}</td>
+                        <td>{{item.name}} <br /><span class="text-secondary font-size-12">{{item.date}}</span></td>
+                        
+
                         <td>
-                            <span v-if="item.api_standard_key" v-html="item.api_standard_key" />
-                            <button class="btn btn-outline-primary" v-else><i class="mdi mdi-pencil font-size-18"></i>Добавить</button>
+                            <div v-for="account in item.accounts">
+                                {{ account.title }} <br /><span class="text-secondary font-size-12">{{ getValue(account.balance, account.currency_sign) }}</span>
+                            </div>
                         </td>
+                        <td>{{item.tax}} %</td>
                         <td>
-                            <span v-if="item.api_statistic_key" v-html="item.api_statistic_key" />
+                            <div>
+                                Стандартный: <span v-if="item.api_standard_key" class="text-primary cursor-pointer">{{ item.api_standard_key }} <i class="mdi mdi-pencil" /></span>
+                                <button class="btn btn-sm btn-outline-primary" v-else><i class="mdi mdi-plus" />Добавить</button>
+                            </div>
+
+                            <div>
+                                Статистика: <span v-if="item.api_statistic_key" class="text-primary cursor-pointer">{{ item.api_statistic_key }} <i class="mdi mdi-pencil" /></span>
+                                <button class="btn btn-sm btn-outline-primary" v-else><i class="mdi mdi-pencil"></i>Добавить</button>
+                            </div>
+
+                            <div>
+                                Реклама: <span v-if="item.api_ad_key" class="text-primary cursor-pointer">{{ item.api_ad_key }} <i class="mdi mdi-pencil" /></span>
+                                <button class="btn btn-sm btn-outline-primary" v-else><i class="mdi mdi-pencil"></i>Добавить</button>
+                            </div>
                         </td>
+                        
                         <td>
-                            <span v-if="item.api_ad_key" v-html="item.api_ad_key" />
-                        </td>
-                        <td>{{item.tax}}</td>
-                        <td>{{item.date}}</td>
-                        <td>
-                            <router-link
-                                :to="{name: 'Reports', params: {id: item.id}}"
-                                class="btn btn-outline-primary"
-                                title="Редактировать"
-                            >
-                            <i class="ri-coins-fill mr-2"></i> Движение средств
-                            </router-link>
+                            <div class="mb-2">
+                                <router-link
+                                    :to="{name: 'Reports', params: {id: item.id}}"
+                                    class="btn btn-sm btn-outline-primary"
+                                    title="Редактировать"
+                                >
+                                Движение средств
+                                </router-link>
+                            </div>
+
+                            <div>
+                                <router-link
+                                    :to="{name: 'Reports', params: {id: item.id}}"
+                                    class="btn btn-sm btn-outline-primary"
+                                    title="Редактировать"
+                                >
+                                Прибыли и убытки
+                                </router-link>
+                            </div>
                   
                         </td>
                         <td>
-                            <router-link
+                            <!-- <router-link
                                 :to="{name: 'StoreChange', params: {id: item.id}}"
                                 class="text-primary"
                                 title="Редактировать"
                             >
                                 <i class="mdi mdi-pencil font-size-18"></i>
-                            </router-link>
+                            </router-link> -->
                             
+                            <button class="btn btn-sm btn-primary d-flex mx-auto">
+                                Изменить  <i class="mdi mdi-pencil font-size-14 ml-2"></i>
+                            </button>
                         </td>
                     </tr>
                     </tbody>

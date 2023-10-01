@@ -12,16 +12,16 @@ class Accounts extends Model
     protected $table = 'bank_accounts';
     protected $guarded = [];
     protected $hidden = ['store'];
-    protected $appends = ['store_name', 'currency_name'];
+    protected $appends = ['store_name', 'currency_sign'];
 
     const CURRENCIES = ['₽' => 'RUB', '₸' => 'KZT', 'Br' => 'BYR'];
 
-    public function getCurrencyNameAttribute()
+    public function getCurrencySignAttribute()
     {
         $currency = $this->attributes['currency'];
         $sign = array_search($currency, self::CURRENCIES);
 
-        return "$currency $sign";
+        return $sign;
     }
 
     public function getStoreNameAttribute()

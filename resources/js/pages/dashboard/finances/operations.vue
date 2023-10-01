@@ -17,6 +17,7 @@ const items = [
 const modalTitle = ref()
 const modalAccount = ref()
 const modalType = ref()
+const modalItem = ref()
 const data = ref([])
 const getData = () => {
     axios.get('/api/v1/profile/operation/list')
@@ -24,11 +25,18 @@ const getData = () => {
             data.value = res.data
         })
 }
-const openCreateModal = (title, type) => {
+const openCreateModal = (title, type, item) => {
   modalTitle.value = title
   modalType.value = type
+  modalItem.value = item
   modalAccount.value.showModal()
 }
+
+const getValue = (num, sign = null) => {
+    let str =  Math.round(num, 0).toLocaleString()
+    return `${str} ${sign}`
+}
+
 onMounted(() => {
     getData()
 })
@@ -38,61 +46,63 @@ onMounted(() => {
         ref="modalAccount" 
         :title="modalTitle"
         :type="modalType"
+        :item="modalItem"
         @action="getData"
     />
     <PageHeader :title="title" :items="items" />
     <div class="row">
         <div class="col-12">
-           <div class="card">
-            <div class="card-body">
-                <div class="col-12 row mb-2">
-                    <button @click="openCreateModal('Добавить операцию прихода', 'profit')" class="btn btn-primary">
-                        <i class="mdi mdi-plus mr-2"></i> Приход
-                    </button>
+            <div class="col-12 row mb-3">
+                <button @click="openCreateModal('Добавить приход', 'profit')" class="btn btn-sm btn-success">
+                    <i class="mdi mdi-plus mr-2"></i> Добавить приход
+                </button>
 
-                    <button @click="openCreateModal('Добавить операцию расхода', 'consume')" class="btn btn-primary ml-2">
-                        <i class="mdi mdi-minus mr-2"></i> Расход
-                    </button>
-                </div>
-
-                <div class="table-responsive mt-3">
-                    <table
-                        class="table datatable dt-responsive nowrap"
-                        style="border-collapse: collapse; border-spacing: 0; width: 100%;"
-                        v-if="data"
-                    >
-                        <thead class="thead-light">
-                        <tr>
-                            <th>Счет</th>
-                            <th>Дата</th>
-                            <th>Операция</th>
-                            <th>Артикул</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="(item, index) in data" :key="index" :class="{'table-success': item.type === 'profit', 'table-danger': item.type === 'consume'}">
-                            <td>{{item.account_name}} <br /> <span class="font-size-12">{{ item.description }}</span></td>
-                            <td>{{item.date}}</td>
-                            <td>
-                                <span v-html="`+ ${item.value}`" v-if="item.type === 'profit'" />
-                                <span v-html="`- ${item.value}`" v-if="item.type === 'consume'" />
-                            </td>
-                            
-                            <td>{{item.art}}</td>
-                            <td>
-                                <router-link
-                                    :to="{name: 'StoreChange', params: {id: item.id}}"
-                                    class="text-primary"
-                                    title="Редактировать"
-                                >
-                                    <i class="mdi mdi-pencil font-size-18"></i>
-                                </router-link>
+                <button @click="openCreateModal('Добавить расход', 'consume')" class="btn btn-sm btn-danger ml-2">
+                    <i class="mdi mdi-minus mr-2"></i> Добавить расход
+                </button>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table
+                            class="table table-centered datatable dt-responsive nowrap"
+                            style="border-collapse: collapse; border-spacing: 0; width: 100%;"
+                            v-if="data"
+                        >
+                            <thead class="thead-light">
+                            <tr>
+                                <th>Операция</th>
                                 
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                                <th>Дата</th>
+                                <th>Счет</th>
+                                <th>Статья</th>
+                                <th>Артикул</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(item, index) in data" :key="index">
+                                <td>
+                                    <span class="text-success" v-html="`+ ${getValue(item.value, item.currency_sign)}`" v-if="item.type === 'profit'" />
+                                    <span class="text-danger" v-html="`- ${getValue(item.value, item.currency_sign)}`" v-if="item.type === 'consume'" />
+                                    
+                                </td>
+                                <td>{{item.date}}</td>
+                                <td>{{item.account_name}}</td>
+                                <td>{{item.article_name}}<br /> <span class="font-size-12 text-secondary">{{ item.description }}</span></td>
+                                
+                                <td>
+                                    <span v-if="item.art" v-html="item.art" />
+                                    <span v-else class="text-secondary font-size-12">Без артикула</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary d-flex mx-auto" @click="openCreateModal('Изменить операцию', item.type, item)">
+                                        Изменить  <i class="mdi mdi-pencil font-size-14 ml-2"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

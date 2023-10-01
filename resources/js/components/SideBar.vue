@@ -71,8 +71,12 @@ const menuItems = ref([
       subItems: [
         {
           label: 'Движение средств',
-          icon: 'ri-coins-fill',
-          link: '/dashboard/reports/movements'
+          link: '/dashboard/reports/cashflow'
+        },
+
+        {
+          label: 'Прибыли и убытки',
+          link: '/dashboard/reports/pnl'
         },
       ]
     },
@@ -93,6 +97,12 @@ const menuItems = ref([
       label: 'Магазины',
       icon: 'ri-menu-fill',
       link: '/dashboard/stores',
+    },
+
+    {
+      label: 'Выйти',
+      icon: 'ri-logout-box-line',
+      link: '/auth/logout'
     }
 ])
 
