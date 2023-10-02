@@ -17,7 +17,7 @@ const registerUser = () => {
     .then((res) => {
       store.commit('saveUser', res.data.user)
       store.commit('saveToken', res.data.token)
-      router.push({name: 'AddStore'})
+      router.push({name: 'StoreAdd'})
     })
     .catch((err) => {
       if(err.response.data.errors !== undefined) errors.value = err.response.data.errors

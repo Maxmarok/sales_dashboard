@@ -1,0 +1,108 @@
+version: "3.7"
+services:
+  app:
+    build:
+      args:
+        user: test
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: sales-dashboard
+    container_name: sales-dashboard-app
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ../:/var/www
+    networks:
+      - sales-dashboard
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - 8025:8025
+    networks:
+      - sales-dashboard
+
+  supervisor:
+    build:
+      context: ./
+      dockerfile: supervisor.dockerfile
+    container_name: sales-dashboard-supervisor
+    working_dir: /var/www/
+    volumes:
+      - ../:/var/www
+      - ./supervisord.conf:/etc/supervisor/supervisord.conf
+    networks:
+      - sales-dashboard
+
+  redis:
+    image: redis:7-alpine
+    container_name: sales-dashboard-redis
+    command: redis-server --appendonly yes --replica-read-only no
+    ports:
+      - 6379:6379
+    networks:
+      - sales-dashboard
+
+  node:
+    build:
+      context: ./
+      dockerfile: node.dockerfile
+    ports:
+      - 6001:6001
+      - 2126:2126
+    container_name: sales-dashboard-node
+    working_dir: /var/www
+    volumes:
+      - ../:/var/www
+    networks:
+      - sales-dashboard
+
+  mysql:
+    platform: linux/x86_64
+    image: mysql:8.0.31
+    container_name: sales-dashboard-mysql
+    restart: unless-stopped
+    ports:
+      - 33061:3306
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - .docker/data/mysql:/var/lib/mysql
+    networks:
+      - sales-dashboard
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: sales-dashboard-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      - sales-dashboard
+
+  nginx:
+    image: nginx:alpine
+    container_name: sales-dashboard-nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 5173:5173
+    volumes:
+      - "../public:/var/www/public:ro"
+      - "../storage/app:/var/www/storage/app:ro"
+      - ../:/var/www
+      - ./docker-compose/nginx:/etc/nginx/conf.d/
+    networks:
+      - sales-dashboard
+
+networks:
+  sales-dashboard:
+    driver: bridge
