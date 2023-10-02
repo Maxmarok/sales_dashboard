@@ -62,7 +62,7 @@ class ProfileController extends Controller
 
     public function listLk()
     {
-        $data = Lk::where('user_id', auth()->id())->with('accounts')->get();
+        $data = Lk::where('user_id', auth()->id())->with('accounts')->orderBy('created_at', 'desc')->get();
         return $data;
     }
 

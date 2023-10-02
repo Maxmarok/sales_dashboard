@@ -71,6 +71,7 @@ Route::group([
         });
 
         Route::post('movements', [App\Http\Controllers\API\SalesController::class, 'movements']);
+        Route::post('cashflow', [App\Http\Controllers\API\SalesController::class, 'cashflow']);
 
         Route::get('calendar', [App\Http\Controllers\API\SalesController::class, 'calendar']);
         Route::get('dashboard', [App\Http\Controllers\API\SalesController::class, 'dashboard']);

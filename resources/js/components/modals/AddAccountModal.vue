@@ -129,17 +129,12 @@ const changeInput = (name, input) => {
   if(errors.value[name]) errors.value[name] = null
 
   if(name === 'balance') {
-    // console.log(name, parseInt(input.target.value.replace(/\s/g, '')))
-    // data.value[name] = getValue(parseInt(input.target.value.replace(/\s/g, '')))
-    
-    // showBalance.value = getValue(parseInt(input.target.value.replace(/\s/g, '')))
-    
     data.value[name] = input.target.value !== '' ? getValue(input.target.value) : 0
   }
 }
 
 const getValue = (num) => {
-    return parseInt(num.replace(/\s/g, '')).toLocaleString()
+  return num ? parseInt(num.toLocaleString().replace(/\s/g, '')).toLocaleString() : 0
 }
 
 onMounted(() => {

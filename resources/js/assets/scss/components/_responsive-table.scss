@@ -144,8 +144,20 @@ body[data-layout="horizontal"] {
   vertical-align: middle !important;
 }
 
-.table-sticky tbody th {
+.table-sticky tbody th,
+.table-sticky tfoot th {
   position: sticky;
   left: 0;
+}
+
+.table-sticky tbody th {
   background-color: #eee;
+}
+
+.table-light th,
+.table-light td {
+  color: #495057;
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+  font-weight: bold;
 }

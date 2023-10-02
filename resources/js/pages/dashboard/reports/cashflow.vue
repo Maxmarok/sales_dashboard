@@ -2,8 +2,9 @@
 import {onMounted, ref, inject} from 'vue'
 import Multiselect from "@vueform/multiselect"
 import PageHeader from "@/components/PageHeader.vue"
-import store from '@/store'
-const title = "Отчет о движении денежных средств"
+import { useRoute } from 'vue-router'
+
+const title = "Отчет о прибылях и убытках"
 const items = [
   {
     text: "Forms",
@@ -41,8 +42,13 @@ const data = ref([
   {consume: null}
 ]);
 onMounted(() => {
-  getStores()
-  getData()
+
+  const route = useRoute()
+  getStores().then(() => {
+   
+    filter.value.lk = route.params.id
+    getData()
+  })
 });
 
 const getSelect = (option) => {
@@ -60,13 +66,13 @@ const getSelect = (option) => {
 
 const getData = async () => {
 
-  let obj = {
-    year: filter.value.year
-  }
+  // let obj = {
+  //   year: filter.value.year
+  // }
 
-  if(filter.value.lk) obj.lk_id = filter.value.lk
+  // if(filter.value.lk) obj.lk_id = filter.value.lk
 
-  await axios.post(`/api/v1/movements`, obj)
+  await axios.post(`/api/v1/cashflow`)
     .then((res) => {
       if(res.data) {
         data.value = res.data.data;
@@ -78,13 +84,12 @@ const getData = async () => {
     })
 }
 
-const getStores = () => {
-  axios.get('/api/v1/profile/lk/list')
+const getStores = async () => {
+  await axios.get('/api/v1/profile/lk/list')
     .then(res => {
       res.data.forEach(x => {
         options.value.lks.push({value: x.id, label: x.name})
       })
-      console.log(options.value.lks)
     })
 }
 
@@ -128,61 +133,45 @@ const getValue = (num, sign = null) => {
 <div class="row">
   <div class="col-12">
     <div class="card">
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-striped mb-0 text-nowrap">
-            <thead class="thead-light">
-              <tr>
-                <th></th>
-                <th>Январь</th>
-                <th>Февраль</th>
-                <th>Март</th>
-                <th>Апрель</th>
-                <th>Май</th>
-                <th>Июнь</th>
-                <th>Июль</th>
-                <th>Август</th>
-                <th>Сентябрь</th>
-                <th>Октябрь</th>
-                <th>Ноябрь</th>
-                <th>Декабрь</th>
-                <th>Итого за год</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-if="data.sales">
-                <th scope="row" class="text-centered">Выручка</th>
-                <td v-for="item in data.sales" :class="{'text-success': item > 0 }" v-html="getValue(item)" />
-              </tr>
+      <div class="table-responsive">
+        <table class="table table-sticky mb-0 text-nowrap text-center">
+          <thead class="thead-light">
+            <tr>
+              <th></th>
+              <th>Январь</th>
+              <th>Февраль</th>
+              <th>Март</th>
+              <th>Апрель</th>
+              <th>Май</th>
+              <th>Июнь</th>
+              <th>Июль</th>
+              <th>Август</th>
+              <th>Сентябрь</th>
+              <th>Октябрь</th>
+              <th>Ноябрь</th>
+              <th>Декабрь</th>
+              <th>Итого за год</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="data.profit">
+              <th scope="row">Поступления</th>
+              <td v-for="item in data.profit" :class="{'text-success': item > 0 }" v-html="getValue(item)" />
+            </tr>
 
-              <tr v-if="data.consume">
-                <th scope="row">Расходы ВБ</th>
-                <td v-for="item in data.consume" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
-              </tr>
+            <tr v-if="data.consume">
+              <th scope="row">Расходы</th>
+              <td v-for="item in data.consume" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
+            </tr>
 
-              <tr v-if="data.penalty">
-                <td scope="row">Штрафы ВБ</td>
-                <td v-for="item in data.penalty" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
-              </tr>
-
-              <tr v-if="data.commission">
-                <td scope="row">Комиссия ВБ</td>
-                <td v-for="item in data.commission" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
-              </tr>
-
-
-              <tr v-if="data.delivery">
-                <td scope="row">Логистика ВБ</td>
-                <td v-for="item in data.delivery" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
-              </tr>
-
-              <tr v-if="data.all" class="table-light">
-                <th scope="row">К перечислению</th>
-                <td v-for="item in data.all" :class="{'text-success': item > 0, 'text-danger': item < 0 }"  v-html="getValue(item)" />
-              </tr>
-            </tbody>
-          </table>
-        </div>
+          </tbody>
+          <tfoot>
+            <tr v-if="data.sum" class="table-light">
+              <th scope="row">Сальдо</th>
+              <td v-for="item in data.sum" :class="{'text-success': item > 0, 'text-danger': item < 0 }"  v-html="getValue(item)" />
+            </tr>
+          </tfoot>
+        </table>
       </div>
     </div>
   </div>

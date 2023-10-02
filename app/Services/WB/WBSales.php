@@ -1,11 +1,15 @@
 <?php
 namespace App\Services\WB;
 
+use App\Models\Articles;
 use App\Models\Lk;
+use App\Models\Operations;
 use App\Models\WbReportDetailByPeriod;
 use App\Models\WbSale;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use PHPUnit\Framework\Constraint\Operator;
 
 class WBSales{
 
@@ -19,8 +23,8 @@ class WBSales{
     public function dashboard()
     {
         $arr = [
-            'sales' => WBSale::whereBetween('date', [now()->startOfMonth(), now()])->select(DB::raw("(DATE_FORMAT(date, '%Y-%m-%d')) as day"), DB::raw('round(sum(forPay), 2) as forPay'), DB::raw("(DATE_FORMAT(date, '%d.%m')) as date_short"))->groupBy('date_short', 'day')->get(),
-            'reports' => WbReportDetailByPeriod::whereBetween('dateFrom', [now()->startOfMonth(), now()])->select(DB::raw("(DATE_FORMAT(dateFrom, '%Y-%m-%d')) as day"), DB::raw('round(sum(penalty), 2) as penalty_sum'), DB::raw('round(sum(delivery_rub), 2) as delivery_rub_sum'), DB::raw("(DATE_FORMAT(dateFrom, '%d.%m')) as date_short"))->groupBy('date_short', 'day')->get(),
+            'sales' => WBSale::whereBetween('date', [now()->subWeeks(2), now()])->select(DB::raw("(DATE_FORMAT(date, '%Y-%m-%d')) as day"), DB::raw('round(sum(forPay), 2) as forPay'), DB::raw("(DATE_FORMAT(date, '%d.%m')) as date_short"))->groupBy('date_short', 'day')->get(),
+            'reports' => WbReportDetailByPeriod::whereBetween('dateFrom', [now()->subWeeks(2), now()])->select(DB::raw("(DATE_FORMAT(dateFrom, '%Y-%m-%d')) as day"), DB::raw('round(sum(penalty), 2) as penalty_sum'), DB::raw('round(sum(delivery_rub), 2) as delivery_rub_sum'), DB::raw("(DATE_FORMAT(dateFrom, '%d.%m')) as date_short"))->groupBy('date_short', 'day')->get(),
         ];
 
         return $arr;
@@ -36,24 +40,151 @@ class WBSales{
         return $arr;
     }
 
-    public function movements(?string $id, string $year)
+    public function cashflow()
     {
-        $data = [
-            'sales' => $this->sales($id, $year),
-        ];
+        $cache = 'cashflow_'.auth()->id();
 
-        $data = array_merge($this->reports($id, $year, $data['sales']), $data);
-        
-        foreach(self::MONTHS as $month) {
-            if($month === 'all') {
-                $data['all'][$month] = $data['sales']['all'] - $data['consume']['all'];
-            } else {
-                $data['all'][$month] = $data['sales'][$month] - $data['consume'][$month];
+        if(!Cache::has($cache)) {
+            $profit = $consume = $sum = [];
+
+            foreach(self::MONTHS as $month) {
+                $profit[$month] = 0;
+                $consume[$month] = 0;
+                $sum[$month] = 0;
             }
+
+            $res = Operations::where('operations.user_id', auth()->id())
+            ->leftJoin('bank_accounts as account', 'account_id', 'account.id')
+            ->groupBy('account.currency', 'type')
+            ->select('account.currency', 'operations.type', DB::raw('round(sum(value), 2) as value'));
+
+            $jan = clone $res;
+            $feb = clone $res;
+            $mar = clone $res;
+            $apr = clone $res;
+            $may = clone $res;
+            $jun = clone $res;
+            $jul = clone $res;
+            $aug = clone $res;
+            $sep = clone $res;
+            $oct = clone $res;
+            $nov = clone $res;
+            $dec = clone $res;
+            $all = clone $res;
+
+            $data = [
+                'jan' => $jan->whereMonth('date', '01')->where('type', 'profit')->get(),
+                'feb' => $feb->whereMonth('date', '02')->where('type', 'profit')->get(),
+                'mar' => $mar->whereMonth('date', '03')->where('type', 'profit')->get(),
+                'apr' => $apr->whereMonth('date', '04')->where('type', 'profit')->get(),
+                'may' => $may->whereMonth('date', '05')->where('type', 'profit')->get(),
+                'jun' => $jun->whereMonth('date', '06')->where('type', 'profit')->get(),
+                'jul' => $jul->whereMonth('date', '07')->where('type', 'profit')->get(),
+                'aug' => $aug->whereMonth('date', '08')->where('type', 'profit')->get(),
+                'sep' => $sep->whereMonth('date', '09')->where('type', 'profit')->get(),
+                'oct' => $oct->whereMonth('date', '10')->where('type', 'profit')->get(),
+                'nov' => $nov->whereMonth('date', '11')->where('type', 'profit')->get(),
+                'dec' => $dec->whereMonth('date', '12')->where('type', 'profit')->get(),
+                'all' => $all->where('type', 'profit')->get(),
+            ];
+
+            foreach($data as $key => $value) {
+                foreach($value as $item) {
+                    if($item['currency'] === 'KZT') {
+                        $profit[$key] += round($item['value'] / 4.5, 0);
+                    } elseif($item['currency'] === 'BYR') {
+                        $profit[$key] += round($item['value'] / 0.25, 0);
+                    } else {
+                        $profit[$key] += $item['value'];
+                    }
+                }
+            }
+
+            $jan = clone $res;
+            $feb = clone $res;
+            $mar = clone $res;
+            $apr = clone $res;
+            $may = clone $res;
+            $jun = clone $res;
+            $jul = clone $res;
+            $aug = clone $res;
+            $sep = clone $res;
+            $oct = clone $res;
+            $nov = clone $res;
+            $dec = clone $res;
+            $all = clone $res;
+
+            $data = [
+                'jan' => $jan->whereMonth('date', '01')->where('type', 'consume')->get(),
+                'feb' => $feb->whereMonth('date', '02')->where('type', 'consume')->get(),
+                'mar' => $mar->whereMonth('date', '03')->where('type', 'consume')->get(),
+                'apr' => $apr->whereMonth('date', '04')->where('type', 'consume')->get(),
+                'may' => $may->whereMonth('date', '05')->where('type', 'consume')->get(),
+                'jun' => $jun->whereMonth('date', '06')->where('type', 'consume')->get(),
+                'jul' => $jul->whereMonth('date', '07')->where('type', 'consume')->get(),
+                'aug' => $aug->whereMonth('date', '08')->where('type', 'consume')->get(),
+                'sep' => $sep->whereMonth('date', '09')->where('type', 'consume')->get(),
+                'oct' => $oct->whereMonth('date', '10')->where('type', 'consume')->get(),
+                'nov' => $nov->whereMonth('date', '11')->where('type', 'consume')->get(),
+                'dec' => $dec->whereMonth('date', '12')->where('type', 'consume')->get(),
+                'all' => $all->where('type', 'consume')->get(),
+            ];
+
+            foreach($data as $key => $value) {
+                foreach($value as $item) {
+                    if($item['currency'] === 'KZT') {
+                        $consume[$key] += round($item['value'] / 5, 0);
+                    } elseif($item['currency'] === 'BYR') {
+                        $consume[$key] += round($item['value'] * 0,25, 0);
+                    } else {
+                        $consume[$key] += $item['value'];
+                    }
+                }
+            }
+
+            foreach($sum as $k => $v) {
+                $sum[$k] = $profit[$k] - $consume[$k];
+            }
+            
+
+            $operations = [
+                'profit' => $profit,
+                'consume' => $consume,
+                'sum' => $sum,
+            ];
+
+            Cache::put('cashflow_'.auth()->id(), $operations, 10);
         }
 
         return Response()->json([
-            'data' => $data
+            'data' => Cache::get($cache),
+        ]);
+    }
+
+    public function movements(?string $id, string $year)
+    {
+        $cache = 'movements_'.auth()->id().'_'.$year.'_'.$id;
+
+        if(!Cache::has($cache)) {
+            $data = [
+                'sales' => $this->sales($id, $year),
+            ];
+    
+            $data = array_merge($this->reports($id, $year, $data['sales']), $data);
+            
+            foreach(self::MONTHS as $month) {
+                if($month === 'all') {
+                    $data['all'][$month] = $data['sales']['all'] - $data['consume']['all'];
+                } else {
+                    $data['all'][$month] = $data['sales'][$month] - $data['consume'][$month];
+                }
+            }
+
+            Cache::put('movements_'.auth()->id().'_'.$year.'_'.$id, $data, 7200);
+        } 
+
+        return Response()->json([
+            'data' => Cache::get($cache),
         ]);
     }
 

@@ -28,22 +28,22 @@ const errors = ref({
     statistic: null,
     ad: null,
 })
-let id = null
+const id = ref()
 const wizard = ref()
 const swal = inject('$swal')
 onMounted(() => {
     const route = useRoute()
-    id = route.params.id  
+    id.value = route.params.id  
 
-    if(id) {
-        console.log(id)
+    if(id.value) {
+        //console.log(id)
 
         setTimeout(() => {
             document.getElementById("preloader").style.display = "block"
             document.getElementById("status").style.display = "block"
         })
 
-        axios.get(`/api/v1/profile/lk/index/${id}`)
+        axios.get(`/api/v1/profile/lk/index/${id.value}`)
             .then((res) => {
                 console.log(res)
                 if(res.data) {
@@ -65,7 +65,7 @@ const formSubmit = async (type) => {
         marketplace: 'WB',
         type: type, 
         key: form.value[type],
-        lk_id: id,
+        lk_id: id.value,
     }
     return await axios.post(`/api/v1/profile/add-api-key`, arr)
         .then((res) => {
@@ -79,12 +79,14 @@ const formSubmit = async (type) => {
                 timer: 2000,
             })
             if(res.data) {
-                if(type === 'ad') {
-                    //store.commit('saveStoreList', res.data.data)
-                    router.push({name: 'ReportsItem', params: {id: id}})
-                } else {
-                    return true;
-                }
+                // if(type === 'ad') {
+                //     //store.commit('saveStoreList', res.data.data)
+                //     router.push({name: 'ReportsItem', params: {id: id}})
+                // } else {
+                //     return true;
+                // }
+
+                return true;
             } else {
                 return false;
             }
@@ -109,7 +111,7 @@ const createStore = async () => {
             //console.log(res);
     
             if(res.data) {
-                id = res.data.data.id
+                id.value = res.data.data.id
                 swal.fire({
                     text: 'Магазин создан, осталось добавить ключи',
                     position: 'bottom-end',
@@ -123,6 +125,55 @@ const createStore = async () => {
                 return false;
             }
         })
+        .catch((err) => {
+            if(err.response.data.message !== undefined) {
+                swal.fire({
+                    text: err.response.data.message,
+                    position: 'bottom-end',
+                    showConfirmButton: false,
+                    icon: 'error',
+                    backdrop: false,
+                    timer: 2000,
+                })
+            }
+        })
+}
+
+const addTax = async () => {
+    return await axios.post(`/api/v1/profile/lk/update`, {name: form.value.title, id: id.value, tax: form.value.tax})
+        .then((res) => {
+            //console.log(res);
+    
+            if(res.data) {
+                swal.fire({
+                    text: 'Новый магазин успешно добавлен!',
+                    position: 'bottom-end',
+                    showConfirmButton: false,
+                    icon: 'success',
+                    backdrop: false,
+                    timer: 3000,
+                })
+                finalCreateStore()
+            } else {
+                return false;
+            }
+        })
+        .catch((err) => {
+            if(err.response.data.message !== undefined) {
+                swal.fire({
+                    text: err.response.data.message,
+                    position: 'bottom-end',
+                    showConfirmButton: false,
+                    icon: 'error',
+                    backdrop: false,
+                    timer: 2000,
+                })
+            }
+        })
+}
+
+const finalCreateStore = async () => {
+    router.push({name: 'StoreList'})
 }
 </script>
 <template>
@@ -213,19 +264,20 @@ const createStore = async () => {
                     </tab-content>
 
                     <tab-content 
-                        :before-change="submitAd"
-                        title="Создание счета"
+                        icon="mdi mdi-percent-outline"
+                        :before-change="addTax"
+                        title="Налог с выручки"
                     >
                         <div class="mb-4">
-                            <label>API-Ключ (реклама)</label>
-                            <textarea
-                                v-model="form.ad"
+                            <label for="tax">Налог с выручки, в %</label>
+                            <input
+                                type="text"
+                                v-model="form.tax"
                                 class="form-control"
-                                name="textarea"
+                                name="tax"
                                 :class="{ 'is-invalid': errors.ad }"
-                                rows="3"
-                                placeholder="Введите API-ключ"
-                            ></textarea>
+                                placeholder="Введите налог с выручки в %"
+                            />
                         </div>
                     </tab-content>
                 </form-wizard>

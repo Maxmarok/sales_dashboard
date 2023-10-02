@@ -58,7 +58,7 @@ onMounted(() => {
             <div class="card">
                 <div class="table-responsive">
                     <table
-                        class="table datatable dt-responsive text-nowrap mb-0"
+                        class="table datatable dt-responsive text-nowrap mb-0 text-center table-centered"
                         style="border-collapse: collapse; border-spacing: 0; width: 100%;"
                         v-if="data"
                     >
@@ -79,32 +79,40 @@ onMounted(() => {
                             
 
                             <td>
-                                <div v-for="account in item.accounts">
-                                    {{ account.title }} <br /><span class="text-secondary font-size-12">{{ getValue(account.balance, account.currency_sign) }}</span>
+                                <div v-for="account in item.accounts" v-if="item.accounts.length > 0">
+                                    {{ account.title }} <span class="text-secondary font-size-12">– {{ getValue(account.balance, account.currency_sign) }}</span>
                                 </div>
+
+                                <span v-else class="text-secondary font-size-12">Нет подключенных счетов</span>
                             </td>
                             <td>{{item.tax}} %</td>
                             <td>
                                 <div>
-                                    Стандартный: <span v-if="item.api_standard_key" class="text-primary cursor-pointer" @click="editApiKeyModal('Изменить стандартный ключ', 'standard', item.api_standard)">{{ item.api_standard_key }} <i class="mdi mdi-pencil" /></span>
-                                    <button class="btn btn-sm btn-outline-primary" v-else><i class="mdi mdi-plus" />Добавить</button>
+                                    <span v-if="item.api_standard_key">
+                                        Стандартный: <span class="text-primary cursor-pointer" @click="editApiKeyModal('Изменить стандартный ключ', 'standard', item.api_standard)">{{ item.api_standard_key }} <i class="mdi mdi-pencil" /></span>
+                                    </span>
+                                    <span class="text-primary cursor-pointer" v-else @click="editApiKeyModal('Добавить стандартный ключ', 'standard', {lk_id: item.id })">Добавить стандартный ключ <i class="mdi mdi-plus"></i></span>
                                 </div>
 
                                 <div>
-                                    Статистика: <span v-if="item.api_statistic_key" class="text-primary cursor-pointer" @click="editApiKeyModal('Изменить ключ статистики', 'statistic', item.api_statistic)">{{ item.api_statistic_key }} <i class="mdi mdi-pencil" /></span>
-                                    <button class="btn btn-sm btn-outline-primary" v-else><i class="mdi mdi-pencil"></i>Добавить</button>
+                                    <span v-if="item.api_statistic_key">
+                                        Статистика: <span class="text-primary cursor-pointer" @click="editApiKeyModal('Изменить ключ статистики', 'statistic', item.api_statistic)">{{ item.api_statistic_key }} <i class="mdi mdi-pencil" /></span>
+                                    </span>
+                                    <span class="text-primary cursor-pointer" v-else @click="editApiKeyModal('Добавить ключ статистики', 'statistic', {lk_id: item.id })">Добавить ключ статистики <i class="mdi mdi-plus"></i></span>
                                 </div>
 
                                 <div>
-                                    Реклама: <span v-if="item.api_ad_key" class="text-primary cursor-pointer" @click="editApiKeyModal('Изменить ключ рекламы', 'ad', item.api_ad)">{{ item.api_ad_key }} <i class="mdi mdi-pencil" /></span>
-                                    <button class="btn btn-sm btn-outline-primary" v-else><i class="mdi mdi-pencil"></i>Добавить</button>
+                                    <span v-if="item.api_ad_key">
+                                        Реклама: <span class="text-primary cursor-pointer" @click="editApiKeyModal('Изменить ключ рекламы', 'ad', item.api_ad)">{{ item.api_ad_key }} <i class="mdi mdi-pencil" /></span>
+                                    </span>
+                                    <span class="text-primary cursor-pointer" v-else @click="editApiKeyModal('Добавить ключ рекламы', 'ad', {lk_id: item.id })">Добавить ключ рекламы <i class="mdi mdi-plus"></i></span>
                                 </div>
                             </td>
                             
                             <td>
                                 <div class="mb-2">
                                     <router-link
-                                        :to="{name: 'Reports', params: {id: item.id}}"
+                                        :to="{name: 'Cashflow', params: {id: item.id}}"
                                         class="btn btn-sm btn-outline-primary"
                                         title="Редактировать"
                                     >
@@ -114,7 +122,7 @@ onMounted(() => {
 
                                 <div>
                                     <router-link
-                                        :to="{name: 'Reports', params: {id: item.id}}"
+                                        :to="{name: 'Pnl', params: {id: item.id}}"
                                         class="btn btn-sm btn-outline-primary"
                                         title="Редактировать"
                                     >

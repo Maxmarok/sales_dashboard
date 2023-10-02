@@ -2,7 +2,8 @@
 import {onMounted, ref, inject} from 'vue'
 import Multiselect from "@vueform/multiselect"
 import PageHeader from "@/components/PageHeader.vue"
-import store from '@/store'
+import { useRoute } from 'vue-router'
+
 const title = "Отчет о прибылях и убытках"
 const items = [
   {
@@ -41,8 +42,13 @@ const data = ref([
   {consume: null}
 ]);
 onMounted(() => {
-  getStores()
-  getData()
+
+  const route = useRoute()
+  getStores().then(() => {
+   
+    filter.value.lk = route.params.id
+    getData()
+  })
 });
 
 const getSelect = (option) => {
@@ -78,13 +84,12 @@ const getData = async () => {
     })
 }
 
-const getStores = () => {
-  axios.get('/api/v1/profile/lk/list')
+const getStores = async () => {
+  await axios.get('/api/v1/profile/lk/list')
     .then(res => {
       res.data.forEach(x => {
         options.value.lks.push({value: x.id, label: x.name})
       })
-      console.log(options.value.lks)
     })
 }
 
@@ -173,12 +178,13 @@ const getValue = (num, sign = null) => {
               <th scope="row">Логистика ВБ</th>
               <td v-for="item in data.delivery" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
             </tr>
-
+          </tbody>
+          <tfoot>
             <tr v-if="data.all" class="table-light">
               <th scope="row">К перечислению</th>
               <td v-for="item in data.all" :class="{'text-success': item > 0, 'text-danger': item < 0 }"  v-html="getValue(item)" />
             </tr>
-          </tbody>
+          </tfoot>
         </table>
       </div>
     </div>

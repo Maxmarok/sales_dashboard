@@ -15,6 +15,11 @@ class SalesController extends Controller
         return (new WBSales())->movements($request->lk_id, $request->year);
     }
 
+    public function cashflow()
+    {
+        return (new WBSales())->cashflow();
+    }
+
     public function dashboard()
     {
         return (new WBSales())->dashboard();

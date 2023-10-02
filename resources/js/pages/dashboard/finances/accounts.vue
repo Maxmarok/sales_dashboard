@@ -112,7 +112,7 @@ onMounted(() => {
                                     <span class="text-secondary font-size-12">Не указаны</span>
                                 </td>
                                 <td>
-                                    <button class="btn btn-sm btn-primary d-flex mx-auto" @click="openCreateModal('Изменить счет', item)">
+                                    <button class="btn btn-sm btn-outline-primary d-flex mx-auto" @click="openCreateModal('Изменить счет', item)">
                                         Изменить  <i class="mdi mdi-pencil font-size-14 ml-2"></i>
                                     </button>
                                 </td>

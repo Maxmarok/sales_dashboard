@@ -26,7 +26,16 @@ class AddApiKeyRequest extends FormRequest
     {
         return [
             'marketplace' => 'required|string|in:WB,OZ,YA',
-            'key' => 'required|string',
+            'key' => [
+                'required',
+                'string',
+                function(string $attribute, mixed $value, Closure $fail){
+                    $query = DB::table('api_keys')->where('key', $value)->exists();
+                    if($query){
+                        $fail('Такой ключ уже добавлен');
+                    }
+                }
+            ],
             'type' => [
                 'required',
                 'string',

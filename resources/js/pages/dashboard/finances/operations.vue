@@ -98,7 +98,7 @@ onMounted(() => {
                                 <span v-else class="text-secondary font-size-12">Без артикула</span>
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-primary d-flex mx-auto" @click="openCreateModal('Изменить операцию', item.type, item)">
+                                <button class="btn btn-sm btn-outline-primary d-flex mx-auto" @click="openCreateModal('Изменить операцию', item.type, item)">
                                     Изменить  <i class="mdi mdi-pencil font-size-14 ml-2"></i>
                                 </button>
                             </td>

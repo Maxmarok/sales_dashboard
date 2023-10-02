@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('ks')->nullable();
             $table->text('number')->nullable();
             $table->enum('currency', ['RUB', 'KZT', 'BYR'])->nullable();
-            $table->text('balance')->nullable();
+            $table->bigInteger('balance')->default(0);
             $table->foreignId('user_id')->references('id')->on('users');
             $table->foreignId('lk_id')->references('id')->on('lks');
             $table->timestamps();

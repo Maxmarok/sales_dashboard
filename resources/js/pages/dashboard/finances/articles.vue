@@ -50,8 +50,8 @@ onMounted(() => {
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title mb-3">Статьи расходов</h4>
-                    <button @click="openCreateModal('Создать статью расходов', 'consume')" class="btn btn-sm btn-outline-danger col-12 mb-2">
-                        <i class="mdi mdi-plus mr-2"></i> Добавить статью расходов
+                    <button @click="openCreateModal('Создать статью расходов', 'consume')" class="btn btn-sm btn-danger col-12 mb-2">
+                        <i class="mdi mdi-minus mr-2" /> Добавить статью расходов
                     </button>
                     <button v-for="item in data.filter(x => x.article_type === 'consume')" @click="openCreateModal('Изменить статью расходов', 'consume', item)" class="btn btn-sm btn-light col-12 mb-2">{{ item.title }} <i class="mdi mdi-pencil" /></button>
                 </div>
@@ -62,8 +62,8 @@ onMounted(() => {
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title mb-3">Статьи доходов</h4>
-                    <button @click="openCreateModal('Создать статью доходов', 'profit')" class="btn btn-sm btn-outline-success col-12 mb-2">
-                        <i class="mdi mdi-plus mr-2"></i> Добавить статью доходов
+                    <button @click="openCreateModal('Создать статью доходов', 'profit')" class="btn btn-sm btn-success col-12 mb-2">
+                        <i class="mdi mdi-plus mr-2" /> Добавить статью доходов
                     </button>
                     <button v-for="item in data.filter(x => x.article_type === 'profit')" @click="openCreateModal('Изменить статью доходов', 'profit', item)" class="btn btn-sm btn-light col-12 mb-2">{{ item.title }} <i class="mdi mdi-pencil" /></button>
                 </div>

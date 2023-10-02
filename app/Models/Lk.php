@@ -89,6 +89,10 @@ class Lk extends Model
 
     protected function getShortKey($key): string
     {
-        return substr($key, 0, self::KEY_LEN) . '...' . substr($key, strlen($key) - self::KEY_LEN, self::KEY_LEN);
+        if(strlen($key) > self::KEY_LEN) {
+            return substr($key, 0, self::KEY_LEN) . '...' . substr($key, strlen($key) - self::KEY_LEN, self::KEY_LEN);
+        } else {
+            return $key;
+        }
     }
 }

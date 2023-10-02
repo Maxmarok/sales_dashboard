@@ -88,7 +88,7 @@ class KeyService extends WBMain {
             ]);
         }
         
-        if($data['type'] === 'statistic' && $init) UpdateReportByPeriodJob::dispatch($user);
+        if($data['type'] === 'statistic' && $init) UpdateReportByPeriodJob::dispatchAfterResponse($user);
 
         return Response()->json([
             "code" => 200,
