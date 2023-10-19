@@ -45,19 +45,18 @@ class WBSales{
         $cashflow = $this->getCashflowData();
         $movements = $this->getMovementsData($id, $year);
 
-        Log::debug([$cashflow, $movements]);
-
-
         $data = array_merge($cashflow, $movements);
 
         foreach(self::MONTHS as $month) {
             //$data[];
 
-            $profit = $data['profit'][$month] + $data['sales'][$month];
-            $consume = $data['consume'][$month];
-
-
-            $data['expenses'][$month] = $profit > 0 ? ($consume / $profit * 100) : 0;
+            if(isset($data['profit'][$month]) && isset($data['sales'][$month]) && $data['consume'][$month]) {
+                $profit = $data['profit'][$month] + $data['sales'][$month];
+                $consume = $data['consume'][$month];
+                $data['expenses'][$month] = $profit > 0 ? ($consume / $profit * 100) : 0;
+            } else {
+                $data['expenses'][$month] = 0;
+            }
         }
 
         return Response()->json([
