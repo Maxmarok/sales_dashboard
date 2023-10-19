@@ -70,6 +70,8 @@ Route::group([
             });
         });
 
+        Route::post('expenses', [App\Http\Controllers\API\SalesController::class, 'expenses']);
+
         Route::post('movements', [App\Http\Controllers\API\SalesController::class, 'movements']);
         Route::post('cashflow', [App\Http\Controllers\API\SalesController::class, 'cashflow']);
 

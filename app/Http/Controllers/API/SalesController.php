@@ -29,4 +29,9 @@ class SalesController extends Controller
     {
         return (new WBSales())->calendar();
     }
+
+    public function expenses(SumRequest $request)
+    {
+        return (new WBSales())->expenses($request->lk_id, $request->year);
+    }
 }

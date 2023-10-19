@@ -91,21 +91,21 @@ onMounted(() => {
                                     <span v-if="item.api_standard_key">
                                         Стандартный: <span class="text-primary cursor-pointer" @click="editApiKeyModal('Изменить стандартный ключ', 'standard', item.api_standard)">{{ item.api_standard_key }} <i class="mdi mdi-pencil" /></span>
                                     </span>
-                                    <span class="text-primary cursor-pointer" v-else @click="editApiKeyModal('Добавить стандартный ключ', 'standard', {lk_id: item.id })">Добавить стандартный ключ <i class="mdi mdi-plus"></i></span>
+                                    <span class="text-primary cursor-pointer" v-else @click="editApiKeyModal('Добавить стандартный ключ', 'standard', {lk_id: item.id })">Добавить стандартный ключ</span>
                                 </div>
 
                                 <div>
                                     <span v-if="item.api_statistic_key">
                                         Статистика: <span class="text-primary cursor-pointer" @click="editApiKeyModal('Изменить ключ статистики', 'statistic', item.api_statistic)">{{ item.api_statistic_key }} <i class="mdi mdi-pencil" /></span>
                                     </span>
-                                    <span class="text-primary cursor-pointer" v-else @click="editApiKeyModal('Добавить ключ статистики', 'statistic', {lk_id: item.id })">Добавить ключ статистики <i class="mdi mdi-plus"></i></span>
+                                    <span class="text-primary cursor-pointer" v-else @click="editApiKeyModal('Добавить ключ статистики', 'statistic', {lk_id: item.id })">Добавить ключ статистики</span>
                                 </div>
 
                                 <div>
                                     <span v-if="item.api_ad_key">
                                         Реклама: <span class="text-primary cursor-pointer" @click="editApiKeyModal('Изменить ключ рекламы', 'ad', item.api_ad)">{{ item.api_ad_key }} <i class="mdi mdi-pencil" /></span>
                                     </span>
-                                    <span class="text-primary cursor-pointer" v-else @click="editApiKeyModal('Добавить ключ рекламы', 'ad', {lk_id: item.id })">Добавить ключ рекламы <i class="mdi mdi-plus"></i></span>
+                                    <span class="text-primary cursor-pointer" v-else @click="editApiKeyModal('Добавить ключ рекламы', 'ad', {lk_id: item.id })">Добавить ключ рекламы</span>
                                 </div>
                             </td>
                             

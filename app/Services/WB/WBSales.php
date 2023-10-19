@@ -13,7 +13,7 @@ use PHPUnit\Framework\Constraint\Operator;
 
 class WBSales{
 
-    const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec', 'all'];
+    const MONTHS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'all'];
 
     public function map_month(string $m): array
     {
@@ -40,7 +40,41 @@ class WBSales{
         return $arr;
     }
 
+    public function expenses(?string $id, string $year)
+    {
+        $cashflow = $this->getCashflowData();
+        $movements = $this->getMovementsData($id, $year);
+
+        Log::debug([$cashflow, $movements]);
+
+
+        $data = array_merge($cashflow, $movements);
+
+        foreach(self::MONTHS as $month) {
+            //$data[];
+
+            $profit = $data['profit'][$month] + $data['sales'][$month];
+            $consume = $data['consume'][$month];
+
+
+            $data['expenses'][$month] = $profit > 0 ? ($consume / $profit * 100) : 0;
+        }
+
+        return Response()->json([
+            'data' => $data,
+        ]);
+    }
+
     public function cashflow()
+    {
+        $data = $this->getCashflowData();
+
+        return Response()->json([
+            'data' => $data,
+        ]);
+    }
+
+    public function getCashflowData()
     {
         $cache = 'cashflow_'.auth()->id();
 
@@ -58,35 +92,15 @@ class WBSales{
             ->groupBy('account.currency', 'type')
             ->select('account.currency', 'operations.type', DB::raw('round(sum(value), 2) as value'));
 
-            $jan = clone $res;
-            $feb = clone $res;
-            $mar = clone $res;
-            $apr = clone $res;
-            $may = clone $res;
-            $jun = clone $res;
-            $jul = clone $res;
-            $aug = clone $res;
-            $sep = clone $res;
-            $oct = clone $res;
-            $nov = clone $res;
-            $dec = clone $res;
-            $all = clone $res;
+            foreach(self::MONTHS as $month) {
+                $item = clone $res;
 
-            $data = [
-                'jan' => $jan->whereMonth('date', '01')->where('type', 'profit')->get(),
-                'feb' => $feb->whereMonth('date', '02')->where('type', 'profit')->get(),
-                'mar' => $mar->whereMonth('date', '03')->where('type', 'profit')->get(),
-                'apr' => $apr->whereMonth('date', '04')->where('type', 'profit')->get(),
-                'may' => $may->whereMonth('date', '05')->where('type', 'profit')->get(),
-                'jun' => $jun->whereMonth('date', '06')->where('type', 'profit')->get(),
-                'jul' => $jul->whereMonth('date', '07')->where('type', 'profit')->get(),
-                'aug' => $aug->whereMonth('date', '08')->where('type', 'profit')->get(),
-                'sep' => $sep->whereMonth('date', '09')->where('type', 'profit')->get(),
-                'oct' => $oct->whereMonth('date', '10')->where('type', 'profit')->get(),
-                'nov' => $nov->whereMonth('date', '11')->where('type', 'profit')->get(),
-                'dec' => $dec->whereMonth('date', '12')->where('type', 'profit')->get(),
-                'all' => $all->where('type', 'profit')->get(),
-            ];
+                if($month === 'all') {
+                    $data[$month] = $item->where('type', 'profit')->get();
+                } else {
+                    $data[$month] = $item->whereMonth('date', $month)->where('type', 'profit')->get();
+                }
+            }
 
             foreach($data as $key => $value) {
                 foreach($value as $item) {
@@ -100,35 +114,15 @@ class WBSales{
                 }
             }
 
-            $jan = clone $res;
-            $feb = clone $res;
-            $mar = clone $res;
-            $apr = clone $res;
-            $may = clone $res;
-            $jun = clone $res;
-            $jul = clone $res;
-            $aug = clone $res;
-            $sep = clone $res;
-            $oct = clone $res;
-            $nov = clone $res;
-            $dec = clone $res;
-            $all = clone $res;
+            foreach(self::MONTHS as $month) {
+                $item = clone $res;
 
-            $data = [
-                'jan' => $jan->whereMonth('date', '01')->where('type', 'consume')->get(),
-                'feb' => $feb->whereMonth('date', '02')->where('type', 'consume')->get(),
-                'mar' => $mar->whereMonth('date', '03')->where('type', 'consume')->get(),
-                'apr' => $apr->whereMonth('date', '04')->where('type', 'consume')->get(),
-                'may' => $may->whereMonth('date', '05')->where('type', 'consume')->get(),
-                'jun' => $jun->whereMonth('date', '06')->where('type', 'consume')->get(),
-                'jul' => $jul->whereMonth('date', '07')->where('type', 'consume')->get(),
-                'aug' => $aug->whereMonth('date', '08')->where('type', 'consume')->get(),
-                'sep' => $sep->whereMonth('date', '09')->where('type', 'consume')->get(),
-                'oct' => $oct->whereMonth('date', '10')->where('type', 'consume')->get(),
-                'nov' => $nov->whereMonth('date', '11')->where('type', 'consume')->get(),
-                'dec' => $dec->whereMonth('date', '12')->where('type', 'consume')->get(),
-                'all' => $all->where('type', 'consume')->get(),
-            ];
+                if($month === 'all') {
+                    $data[$month] = $item->where('type', 'profit')->get();
+                } else {
+                    $data[$month] = $item->whereMonth('date', $month)->where('type', 'consume')->get();
+                }
+            }
 
             foreach($data as $key => $value) {
                 foreach($value as $item) {
@@ -156,12 +150,17 @@ class WBSales{
             Cache::put('cashflow_'.auth()->id(), $operations, 10);
         }
 
-        return Response()->json([
-            'data' => Cache::get($cache),
-        ]);
+        return Cache::get($cache);
     }
 
     public function movements(?string $id, string $year)
+    {
+        return Response()->json([
+            'data' => $this->getMovementsData($id, $year),
+        ]);
+    }
+
+    public function getMovementsData(?string $id, string $year)
     {
         $cache = 'movements_'.auth()->id().'_'.$year.'_'.$id;
 
@@ -183,9 +182,7 @@ class WBSales{
             Cache::put('movements_'.auth()->id().'_'.$year.'_'.$id, $data, 7200);
         } 
 
-        return Response()->json([
-            'data' => Cache::get($cache),
-        ]);
+        return Cache::get($cache);
     }
 
     public function reports(?string $id, string $year, array $sales)
@@ -213,83 +210,24 @@ class WBSales{
         }
 
         foreach ($lks as $lk) {
-            $jan = clone $res;
-            $feb = clone $res;
-            $mar = clone $res;
-            $apr = clone $res;
-            $may = clone $res;
-            $jun = clone $res;
-            $jul = clone $res;
-            $aug = clone $res;
-            $sep = clone $res;
-            $oct = clone $res;
-            $nov = clone $res;
-            $dec = clone $res;
-            $all = clone $res;
 
-            $commission = [
-                'jan' => $lk->tax > 0 ? $sales['jan'] / $lk->tax : 0,
-                'feb' => $lk->tax > 0 ? $sales['feb'] / $lk->tax : 0,
-                'mar' => $lk->tax > 0 ? $sales['mar'] / $lk->tax : 0,
-                'apr' => $lk->tax > 0 ? $sales['apr'] / $lk->tax : 0,
-                'may' => $lk->tax > 0 ? $sales['may'] / $lk->tax : 0,
-                'jun' => $lk->tax > 0 ? $sales['jun'] / $lk->tax : 0,
-                'jul' => $lk->tax > 0 ? $sales['jul'] / $lk->tax : 0,
-                'aug' => $lk->tax > 0 ? $sales['aug'] / $lk->tax : 0,
-                'sep' => $lk->tax > 0 ? $sales['sep'] / $lk->tax : 0,
-                'oct' => $lk->tax > 0 ? $sales['oct'] / $lk->tax : 0,
-                'nov' => $lk->tax > 0 ? $sales['nov'] / $lk->tax : 0,
-                'dec' => $lk->tax > 0 ? $sales['dec'] / $lk->tax : 0,
-                'all' => $lk->tax > 0 ? $sales['all'] / $lk->tax : 0,
-            ];
+            foreach(self::MONTHS as $month) {
+                $item = clone $res;
+                $commission[$month] = $lk->tax > 0 ? $sales[$month] / $lk->tax : 0;
 
-            $penalty = [
-                'jan' => $jan->whereMonth('dateFrom', '01')->sum('penalty'),
-                'feb' => $feb->whereMonth('dateFrom', '02')->sum('penalty'),
-                'mar' => $mar->whereMonth('dateFrom', '03')->sum('penalty'),
-                'apr' => $apr->whereMonth('dateFrom', '04')->sum('penalty'),
-                'may' => $may->whereMonth('dateFrom', '05')->sum('penalty'),
-                'jun' => $jun->whereMonth('dateFrom', '06')->sum('penalty'),
-                'jul' => $jul->whereMonth('dateFrom', '07')->sum('penalty'),
-                'aug' => $aug->whereMonth('dateFrom', '08')->sum('penalty'),
-                'sep' => $sep->whereMonth('dateFrom', '09')->sum('penalty'),
-                'oct' => $oct->whereMonth('dateFrom', '10')->sum('penalty'),
-                'nov' => $nov->whereMonth('dateFrom', '11')->sum('penalty'),
-                'dec' => $dec->whereMonth('dateFrom', '12')->sum('penalty'),
-                'all' => $all->sum('penalty'),
-            ];
 
-            $delivery = [
-                'jan' => $jan->whereMonth('dateFrom', '01')->sum('delivery_rub'),
-                'feb' => $feb->whereMonth('dateFrom', '02')->sum('delivery_rub'),
-                'mar' => $mar->whereMonth('dateFrom', '03')->sum('delivery_rub'),
-                'apr' => $apr->whereMonth('dateFrom', '04')->sum('delivery_rub'),
-                'may' => $may->whereMonth('dateFrom', '05')->sum('delivery_rub'),
-                'jun' => $jun->whereMonth('dateFrom', '06')->sum('delivery_rub'),
-                'jul' => $jul->whereMonth('dateFrom', '07')->sum('delivery_rub'),
-                'aug' => $aug->whereMonth('dateFrom', '08')->sum('delivery_rub'),
-                'sep' => $sep->whereMonth('dateFrom', '09')->sum('delivery_rub'),
-                'oct' => $oct->whereMonth('dateFrom', '10')->sum('delivery_rub'),
-                'nov' => $nov->whereMonth('dateFrom', '11')->sum('delivery_rub'),
-                'dec' => $dec->whereMonth('dateFrom', '12')->sum('delivery_rub'),
-                'all' => $all->sum('delivery_rub'),
-            ];
+                if($month === 'all') {
+                    $penalty[$month] = $item->sum('penalty');
+                    $delivery[$month] = $item->sum('delivery_rub');
 
-            $consume = [
-                'jan' => $commission['jan'] + $penalty['jan'] + $delivery['jan'],
-                'feb' => $commission['feb'] + $penalty['feb'] + $delivery['feb'],
-                'mar' => $commission['mar'] + $penalty['mar'] + $delivery['mar'],
-                'apr' => $commission['apr'] + $penalty['apr'] + $delivery['apr'],
-                'may' => $commission['may'] + $penalty['may'] + $delivery['may'],
-                'jun' => $commission['jun'] + $penalty['jun'] + $delivery['jun'],
-                'jul' => $commission['jul'] + $penalty['jul'] + $delivery['jul'],
-                'aug' => $commission['aug'] + $penalty['aug'] + $delivery['aug'],
-                'sep' => $commission['sep'] + $penalty['sep'] + $delivery['sep'],
-                'oct' => $commission['oct'] + $penalty['oct'] + $delivery['oct'],
-                'nov' => $commission['nov'] + $penalty['nov'] + $delivery['nov'],
-                'dec' => $commission['dec'] + $penalty['dec'] + $delivery['dec'],
-                'all' => $commission['all'] + $penalty['all'] + $delivery['all'],
-            ];
+                } else {
+                    $penalty[$month] = $item->whereMonth('dateFrom', $month)->sum('penalty');
+                    $delivery[$month] = $item->whereMonth('dateFrom', $month)->sum('delivery_rub');
+                }
+
+                $consume[$month] = $commission[$month] + $penalty[$month] + $delivery[$month];
+            
+            }
 
             //Log::debug($data['commission']);
 
@@ -315,35 +253,15 @@ class WBSales{
             $res = $res->where('lk_id', $id);
         }
 
-        $jan = clone $res;
-        $feb = clone $res;
-        $mar = clone $res;
-        $apr = clone $res;
-        $may = clone $res;
-        $jun = clone $res;
-        $jul = clone $res;
-        $aug = clone $res;
-        $sep = clone $res;
-        $oct = clone $res;
-        $nov = clone $res;
-        $dec = clone $res;
-        $all = clone $res;
+        foreach(self::MONTHS as $month) {
+            $item = clone $res;
 
-        $arr = [
-            'jan' => $jan->whereMonth('date', '01')->sum('forPay'),
-            'feb' => $feb->whereMonth('date', '02')->sum('forPay'),
-            'mar' => $mar->whereMonth('date', '03')->sum('forPay'),
-            'apr' => $apr->whereMonth('date', '04')->sum('forPay'),
-            'may' => $may->whereMonth('date', '05')->sum('forPay'),
-            'jun' => $jun->whereMonth('date', '06')->sum('forPay'),
-            'jul' => $jul->whereMonth('date', '07')->sum('forPay'),
-            'aug' => $aug->whereMonth('date', '08')->sum('forPay'),
-            'sep' => $sep->whereMonth('date', '09')->sum('forPay'),
-            'oct' => $oct->whereMonth('date', '10')->sum('forPay'),
-            'nov' => $nov->whereMonth('date', '11')->sum('forPay'),
-            'dec' => $dec->whereMonth('date', '12')->sum('forPay'),
-            'all' => $all->sum('forPay'),
-        ];
+            if($month === 'all') {
+                $arr[$month] = $item->sum('forPay');
+            } else {
+                $arr[$month] = $item->whereMonth('date', $month)->sum('forPay');
+            }
+        }
 
         return $arr;
     }

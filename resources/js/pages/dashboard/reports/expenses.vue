@@ -4,7 +4,7 @@ import Multiselect from "@vueform/multiselect"
 import PageHeader from "@/components/PageHeader.vue"
 import { useRoute } from 'vue-router'
 
-const title = "Отчет о движении средств"
+const title = "Анализ расходов"
 const items = [
   {
     text: "Forms",
@@ -66,13 +66,13 @@ const getSelect = (option) => {
 
 const getData = async () => {
 
-  // let obj = {
-  //   year: filter.value.year
-  // }
+  let obj = {
+    year: filter.value.year
+  }
 
-  // if(filter.value.lk) obj.lk_id = filter.value.lk
+  if(filter.value.lk) obj.lk_id = filter.value.lk
 
-  await axios.post(`/api/v1/cashflow`)
+  await axios.post(`/api/v1/expenses`, obj)
     .then((res) => {
       if(res.data) {
         data.value = res.data.data;
@@ -98,6 +98,10 @@ const getValue = (num, sign = null) => {
   //if(num > 0) str = str + ' ₽'
   if(sign && num > 0) str = `${sign} ${str}`
   return str
+}
+
+const getPercent = (num) => {
+  return Math.round(num, 0).toLocaleString() + ' %'
 }
 </script>
 <template>
@@ -159,6 +163,11 @@ const getValue = (num, sign = null) => {
               <td v-for="item in data.profit" :class="{'text-success': item > 0 }" v-html="getValue(item)" />
             </tr>
 
+            <tr v-if="data.sales">
+              <th scope="row">Выручка</th>
+              <td v-for="item in data.sales" :class="{'text-success': item > 0 }" v-html="getValue(item)" />
+            </tr>
+
             <tr v-if="data.consume">
               <th scope="row">Расходы</th>
               <td v-for="item in data.consume" :class="{'text-danger': item > 0 }" v-html="getValue(item, '-')" />
@@ -167,8 +176,8 @@ const getValue = (num, sign = null) => {
           </tbody>
           <tfoot>
             <tr v-if="data.sum" class="table-light">
-              <th scope="row">Сальдо</th>
-              <td v-for="item in data.sum" :class="{'text-success': item > 0, 'text-danger': item < 0 }"  v-html="getValue(item)" />
+              <th scope="row">Процент расходов</th>
+              <td v-for="item in data.expenses" :class="{'text-danger': item > 100 }" v-html="getPercent(item)" />
             </tr>
           </tfoot>
         </table>

@@ -78,6 +78,11 @@ const menuItems = ref([
           label: 'Прибыли и убытки',
           link: '/dashboard/reports/pnl'
         },
+
+        {
+          label: 'Анализ расходов',
+          link: '/dashboard/reports/expenses'
+        },
       ]
     },
 

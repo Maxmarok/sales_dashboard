@@ -4,6 +4,7 @@ import Landing from '@/pages/Landing.vue'
 import Reports from '@/pages/dashboard/reports/index.vue'
 import Cashflow from '@/pages/dashboard/reports/cashflow.vue'
 import Pnl from '@/pages/dashboard/reports/pnl.vue'
+import Expenses from '@/pages/dashboard/reports/expenses.vue'
 import Finances from '@/pages/dashboard/finances/index.vue'
 import Operations from '@/pages/dashboard/finances/operations.vue'
 import Accounts from '@/pages/dashboard/finances/accounts.vue'
@@ -62,6 +63,12 @@ const routes = [
                         name: 'Pnl',
                         path: 'pnl',
                         component: Pnl
+                    },
+
+                    {
+                        name: 'Expenses',
+                        path: 'expenses',
+                        component: Expenses
                     },
                 ]
             },
