@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from 'vue'
+import {ref, inject} from 'vue'
 import router from '@/router'
 import store from '@/store'
 const user = ref({
@@ -12,6 +12,7 @@ const errors = ref({
   name: null,
   password: null,
 })
+const swal = inject('$swal')
 const loginUser = () => {
   axios.post('/api/v1/login', user.value)
     .then((res) => {
@@ -20,7 +21,17 @@ const loginUser = () => {
       router.push({name: 'Dashboard'})
     })
     .catch((err) => {
-      if(err.response !== undefined) errors.value = err.response.data.errors
+      if(err.response.data.errors !== undefined) errors.value = err.response.data.errors
+      if(err.response.data.message !== undefined) {
+          swal.fire({
+              text: err.response.data.message,
+              position: 'bottom-end',
+              showConfirmButton: false,
+              icon: 'error',
+              backdrop: false,
+              timer: 2000,
+          })
+      }
     })
 }
 </script>
